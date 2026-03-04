@@ -3,7 +3,7 @@ import { C, F, MOODS, PAIN_STEPS } from "../lib/constants";
 import { fmtDay } from "../lib/helpers";
 import CycleHistoryModal from "../components/CycleHistoryModal";
 
-const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatchAddPeriodDays }) => {
+const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatchAddPeriodDays, onOpenLog, onAddPeriodDay, onRemovePeriodDay }) => {
   const TODAY = new Date();
   const DAYS_BACK = 300, DAYS_FORWARD = 90;
   const days = [];
@@ -122,11 +122,16 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
       <div style={{ height: 1, background: C.border, flexShrink: 0 }} />
 
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px 20px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-          <div>
-            <p style={{ fontFamily: F.heading, fontSize: 18, fontWeight: 400, color: C.text }}>{fmtDay(selectedKey)}</p>
-            {isToday && <span style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, color: C.primary, background: C.primaryMuted, padding: "2px 8px", borderRadius: 20, marginTop: 4, display: "inline-block" }}>Today</span>}
-            {isPeriodDay && !isToday && <span style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, color: C.rose, background: C.roseMuted, padding: "2px 8px", borderRadius: 20, marginTop: 4, display: "inline-block" }}>🩸 Period day</span>}
+        <div style={{ marginBottom: 14 }}>
+          <p style={{ fontFamily: F.heading, fontSize: 18, fontWeight: 400, color: C.text, marginBottom: 8 }}>{fmtDay(selectedKey)}</p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {isToday && <span style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, color: C.primary, background: C.primaryMuted, padding: "2px 8px", borderRadius: 20, display: "inline-block" }}>Today</span>}
+            <button className="press" onClick={() => onOpenLog(selectedKey)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${selectedLog ? C.primaryLight : C.border}`, background: selectedLog ? C.primaryMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: selectedLog ? C.primary : C.textSec }}>
+              {selectedLog ? "✓ Edit log" : "+ Log symptoms"}
+            </button>
+            <button className="press" onClick={() => isPeriodDay ? onRemovePeriodDay(selectedKey) : onAddPeriodDay(selectedKey)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${isPeriodDay ? C.rose : C.border}`, background: isPeriodDay ? C.roseMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: isPeriodDay ? C.rose : C.textSec }}>
+              {isPeriodDay ? "🩸 Period day" : "Mark period"}
+            </button>
           </div>
         </div>
 

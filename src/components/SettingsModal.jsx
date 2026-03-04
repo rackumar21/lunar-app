@@ -23,8 +23,8 @@ const SettingsModal = ({ isOpen, onClose, data, onUpdateSettings, onSignOut }) =
           <Label mb={10}>Cycle length</Label>
           <div style={{ background: C.bg, borderRadius: 14, padding: "14px 16px", border: `1px solid ${C.border}`, marginBottom: 14 }}>
             <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted, marginBottom: 4 }}>Predicted from your history</p>
-            <p style={{ fontFamily: F.heading, fontSize: 24, color: C.text }}>28 <span style={{ fontSize: 12, color: C.textSec, fontFamily: F.body }}>days</span></p>
-            <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted, marginTop: 3 }}>Based on last 4 cycles · updates automatically</p>
+            <p style={{ fontFamily: F.heading, fontSize: 24, color: C.text }}>{data.predictedCycleLength} <span style={{ fontSize: 12, color: C.textSec, fontFamily: F.body }}>days</span></p>
+            <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted, marginTop: 3 }}>{data.cycleHistory?.length > 0 ? `Based on last ${data.cycleHistory.length} cycle${data.cycleHistory.length > 1 ? "s" : ""} · updates automatically` : "Log past cycles to improve this prediction"}</p>
           </div>
           <Label mb={10}>Period length</Label>
           <div style={{ background: C.bg, borderRadius: 14, padding: "14px 16px", border: `1px solid ${C.border}`, marginBottom: 14 }}>

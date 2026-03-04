@@ -86,8 +86,15 @@ export const computeCycleData = (periodDays) => {
       d.setDate(d.getDate() + 1);
     }
 
+    // Period end = start + periodLength - 1
+    const periodEndDate = new Date(startDate);
+    periodEndDate.setDate(periodEndDate.getDate() + Math.max(periodLength - 1, 0));
+    const periodLabel = periodLength > 0
+      ? `${fmt(starts[i - 1])} – ${fmt(periodEndDate.toISOString().slice(0, 10))}`
+      : fmt(starts[i - 1]);
+
     cycleHistory.push({
-      label: `${fmt(starts[i - 1])} – ${fmt(endOfCycle.toISOString().slice(0, 10))}`,
+      label: periodLabel,
       cycleLength,
       periodLength: periodLength || null,
     });
