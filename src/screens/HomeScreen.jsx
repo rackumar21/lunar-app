@@ -1,21 +1,35 @@
+import { useState } from "react";
 import { C, F, PHASES, getPhaseForDay } from "../lib/constants";
 import CycleWheel from "../components/CycleWheel";
 import Label from "../components/shared/Label";
 import ComingSoon from "../components/shared/ComingSoon";
-import StatusPill from "../components/shared/StatusPill";
+import PeriodLogModal from "../components/PeriodLogModal";
 
-const HomeScreen = ({ data, onOpenLog, onTogglePeriod, onOpenSettings }) => {
-  const phase = getPhaseForDay(data.cycleDay);
+const greeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+};
+
+const HomeScreen = ({ data, onOpenLog, onOpenSettings, userName, onBatchAddPeriodDays, onRemovePeriodDay }) => {
+  const phase = data.cycleDay ? getPhaseForDay(data.cycleDay) : null;
+  const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
+
+  const handleEndToday = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    onRemovePeriodDay(today);
+  };
 
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: "0 0 16px" }}>
       <div style={{ padding: "18px 20px 0", display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
         <div>
           <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>
-            {new Date("2025-02-26").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
+            {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
           </p>
-          <h1 style={{ fontFamily: F.heading, fontSize: 24, fontWeight: 300, fontStyle: "italic", color: C.text, lineHeight: 1.2 }}>
-            Good morning, Rachita ☀️
+          <h1 style={{ fontFamily: F.heading, fontSize: 24, fontWeight: 300, color: C.text, lineHeight: 1.3 }}>
+            {greeting()}, {userName} ☀️
           </h1>
         </div>
         <button className="press" onClick={onOpenSettings} style={{ marginTop: 2, width: 34, height: 34, borderRadius: "50%", background: C.white, border: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>⚙️</button>
@@ -27,9 +41,9 @@ const HomeScreen = ({ data, onOpenLog, onTogglePeriod, onOpenSettings }) => {
 
       <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 16, flexWrap: "wrap", padding: "0 20px" }}>
         {PHASES.map((p) => (
-          <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 20, background: p.name === phase.name ? p.color + "22" : "transparent", border: `1px solid ${p.name === phase.name ? p.color : C.border}` }}>
+          <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 20, background: phase && p.name === phase.name ? p.color + "22" : "transparent", border: `1px solid ${phase && p.name === phase.name ? p.color : C.border}` }}>
             <span style={{ width: 7, height: 7, borderRadius: "50%", background: p.color, display: "inline-block" }} />
-            <span style={{ fontFamily: F.body, fontSize: 10, color: p.name === phase.name ? p.color : C.textMuted, fontWeight: p.name === phase.name ? 600 : 400 }}>{p.name}</span>
+            <span style={{ fontFamily: F.body, fontSize: 10, color: phase && p.name === phase.name ? p.color : C.textMuted, fontWeight: phase && p.name === phase.name ? 600 : 400 }}>{p.name}</span>
           </div>
         ))}
       </div>
@@ -46,45 +60,31 @@ const HomeScreen = ({ data, onOpenLog, onTogglePeriod, onOpenSettings }) => {
           <span style={{ fontFamily: F.body, fontSize: 18, color: C.textMuted }}>›</span>
         </button>
 
-        <button className="press" onClick={onTogglePeriod} style={{ width: "100%", padding: 14, borderRadius: 14, border: `1.5px dashed ${data.isOnPeriod ? C.rose : C.primaryLight}`, background: data.isOnPeriod ? C.roseMuted : "transparent", fontFamily: F.body, fontSize: 13, fontWeight: 500, color: data.isOnPeriod ? C.rose : C.textSec, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 14 }}>
+        <button className="press" onClick={() => setIsPeriodModalOpen(true)} style={{ width: "100%", padding: 14, borderRadius: 14, border: `1.5px dashed ${data.isOnPeriod ? C.rose : C.primaryLight}`, background: data.isOnPeriod ? C.roseMuted : "transparent", fontFamily: F.body, fontSize: 13, fontWeight: 500, color: data.isOnPeriod ? C.rose : C.textSec, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 14 }}>
           <span>{data.isOnPeriod ? "🔴" : "🩸"}</span>
-          {data.isOnPeriod ? "End period" : "Start period"}
+          {data.isOnPeriod ? "Period ongoing · tap to edit" : "Log period"}
         </button>
+
+        <PeriodLogModal
+          isOpen={isPeriodModalOpen}
+          onClose={() => setIsPeriodModalOpen(false)}
+          isOnPeriod={data.isOnPeriod}
+          onSave={onBatchAddPeriodDays}
+          onEndToday={handleEndToday}
+        />
 
         <div style={{ background: C.white, borderRadius: 14, padding: "14px 16px", border: `1px solid ${C.border}`, marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>Next period</p>
-            <p style={{ fontFamily: F.heading, fontSize: 20, color: C.text }}>{data.nextPeriodDate}</p>
+            <p style={{ fontFamily: F.heading, fontSize: 20, color: C.text }}>{data.nextPeriodDate ?? "—"}</p>
           </div>
           <div style={{ textAlign: "right" }}>
-            <p style={{ fontFamily: F.heading, fontSize: 30, color: C.primary, lineHeight: 1 }}>{data.daysUntilNextPeriod}</p>
+            <p style={{ fontFamily: F.heading, fontSize: 30, color: C.primary, lineHeight: 1 }}>{data.daysUntilNextPeriod ?? "—"}</p>
             <p style={{ fontFamily: F.body, fontSize: 10, color: C.textMuted }}>days away</p>
           </div>
         </div>
 
-        <div style={{ marginBottom: 14 }}>
-          <Label mb={10}>Last 3 cycles</Label>
-          <div style={{ background: C.white, borderRadius: 16, border: `1px solid ${C.border}`, overflow: "hidden" }}>
-            {[
-              { label: "29 Jan – 26 Feb", cycleLength: 29, periodLength: 6, status: "normal" },
-              { label: "1 Jan – 29 Jan", cycleLength: 28, periodLength: 6, status: "normal" },
-              { label: "4 Dec – 1 Jan", cycleLength: 28, periodLength: 6, status: "normal" },
-            ].map((cycle, i, arr) => (
-              <div key={cycle.label} style={{ padding: "13px 16px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
-                  <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec, marginBottom: 3 }}>{cycle.label}</p>
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Cycle <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.cycleLength}d</span></p>
-                    <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Period <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.periodLength}d</span></p>
-                  </div>
-                </div>
-                <StatusPill status={cycle.status} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ background: C.comingSoonMuted, borderRadius: 14, padding: "13px 15px", border: `1px dashed ${C.comingSoon}44`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+<div style={{ background: C.comingSoonMuted, borderRadius: 14, padding: "13px 15px", border: `1px dashed ${C.comingSoon}44`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
               <p style={{ fontFamily: F.body, fontSize: 12, fontWeight: 600, color: C.comingSoon }}>Cycle Insights</p>

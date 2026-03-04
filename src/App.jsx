@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { SEED, SEED_NOTES, HORMONE_REPORTS } from "./lib/constants";
-import { todayKey } from "./lib/helpers";
+import { useState, useMemo } from "react";
+import { SEED, SEED_NOTES, HORMONE_REPORTS, C, F } from "./lib/constants";
+import { todayKey, computeCycleData } from "./lib/helpers";
+import { useAuth } from "./hooks/useAuth";
 import { useLogs } from "./hooks/useLogs";
 import { usePeriodDays } from "./hooks/usePeriodDays";
 import Styles from "./components/Styles";
@@ -13,8 +14,11 @@ import HomeScreen from "./screens/HomeScreen";
 import CalendarScreen from "./screens/CalendarScreen";
 import AskLunarScreen from "./screens/AskLunarScreen";
 import RecordsScreen from "./screens/RecordsScreen";
+import AuthScreen from "./screens/AuthScreen";
 
 export default function LunarApp() {
+  const { user, loading: authLoading, signIn, signUp, signOut } = useAuth();
+
   const [tab, setTab] = useState("home");
   const [appData, setAppData] = useState(SEED);
   const [notes, setNotes] = useState(SEED_NOTES);
@@ -25,9 +29,13 @@ export default function LunarApp() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  // Real data from Supabase — replaces SEED_LOGS and allPeriodDays
-  const { logs, saveLog } = useLogs();
-  const { periodDays, addPeriodDay, removePeriodDay } = usePeriodDays();
+  // Pass user to hooks so they scope data to the logged-in user
+  const { logs, saveLog } = useLogs(user);
+  const { periodDays, addPeriodDay, removePeriodDay, batchAddPeriodDays } = usePeriodDays(user);
+
+  // Derive cycle state from real period data
+  const cycleData = useMemo(() => computeCycleData(periodDays), [periodDays]);
+  const displayData = { ...appData, ...cycleData, todayLog: logs[todayKey()] || null };
 
   const handleSaveLog = (log) => {
     const key = logDate || todayKey();
@@ -49,7 +57,10 @@ export default function LunarApp() {
 
   const dayLabel = logDate
     ? new Date(logDate + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })
-    : new Date("2025-02-26").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    : new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+
+  // While checking auth state, show nothing (avoids flash of wrong screen)
+  if (authLoading) return null;
 
   return (
     <>
@@ -63,21 +74,31 @@ export default function LunarApp() {
             <span style={{ fontFamily: "'Libre Franklin', system-ui, sans-serif", fontSize: 11, color: "#28211E" }}>●●● WiFi 🔋</span>
           </div>
 
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            {tab === "home" && <HomeScreen data={appData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onTogglePeriod={handleTogglePeriod} onOpenSettings={() => setIsSettingsOpen(true)} />}
-            {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} />}
-            {tab === "ask" && <AskLunarScreen />}
-            {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} />}
-          </div>
-
-          <TabBar active={tab} onChange={setTab} />
+          {/* Show auth screen if not logged in, otherwise show the app */}
+          {!user ? (
+            <AuthScreen onSignIn={signIn} onSignUp={signUp} />
+          ) : (
+            <>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                {tab === "home" && <HomeScreen data={displayData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onOpenSettings={() => setIsSettingsOpen(true)} userName={user.email.split('@')[0]} onBatchAddPeriodDays={batchAddPeriodDays} onRemovePeriodDay={removePeriodDay} />}
+                {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} />}
+                {tab === "ask" && <AskLunarScreen />}
+                {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} />}
+              </div>
+              <TabBar active={tab} onChange={setTab} />
+            </>
+          )}
         </div>
       </div>
 
-      <LogModal isOpen={isLogOpen} onClose={() => { setIsLogOpen(false); setLogDate(null); }} isOnPeriod={appData.isOnPeriod} existingLog={logs[logDate || todayKey()]} onSave={handleSaveLog} dateLabel={dayLabel} />
-      <RecordDetailModal report={selectedReport} onClose={() => setSelectedReport(null)} />
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} data={appData} onUpdateSettings={(s) => setAppData((p) => ({ ...p, ...s }))} />
-      <UploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSave={(r) => console.log("New report:", r)} />
+      {user && (
+        <>
+          <LogModal isOpen={isLogOpen} onClose={() => { setIsLogOpen(false); setLogDate(null); }} isOnPeriod={cycleData.isOnPeriod} existingLog={logs[logDate || todayKey()]} onSave={handleSaveLog} dateLabel={dayLabel} />
+          <RecordDetailModal report={selectedReport} onClose={() => setSelectedReport(null)} />
+          <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} data={appData} onUpdateSettings={(s) => setAppData((p) => ({ ...p, ...s }))} onSignOut={signOut} />
+          <UploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSave={(r) => console.log("New report:", r)} />
+        </>
+      )}
     </>
   );
 }

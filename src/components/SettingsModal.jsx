@@ -5,7 +5,7 @@ import Handle from "./shared/Handle";
 import CloseBtn from "./shared/CloseBtn";
 import ComingSoon from "./shared/ComingSoon";
 
-const SettingsModal = ({ isOpen, onClose, data, onUpdateSettings }) => {
+const SettingsModal = ({ isOpen, onClose, data, onUpdateSettings, onSignOut }) => {
   const [periodLen, setPeriodLen] = useState(data.defaultPeriodLength);
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -45,6 +45,9 @@ const SettingsModal = ({ isOpen, onClose, data, onUpdateSettings }) => {
               {copied ? "✓ Copied!" : "Copy link"}
             </button>
           </div>
+          <button className="press" onClick={onSignOut} style={{ width: "100%", padding: "13px", borderRadius: 12, marginBottom: 22, background: C.border, fontSize: 13, fontWeight: 600, color: C.textSec }}>
+            Log out
+          </button>
           <Label mb={10}>Coming in V2</Label>
           {[
             { icon: "⌚", title: "Wearable Sync", desc: "Apple Health, Garmin — sleep, HRV, steps alongside your cycle." },

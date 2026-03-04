@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
-export function usePeriodDays() {
+export function usePeriodDays(user) {
   const [periodDays, setPeriodDays] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchPeriodDays()
-  }, [])
+    if (user) fetchPeriodDays()
+  }, [user])
 
   const fetchPeriodDays = async () => {
     const { data, error } = await supabase
       .from('period_days')
       .select('date')
+      .eq('user_id', user.id)
 
     if (error) {
       console.error('Error fetching period days:', error)
@@ -24,12 +25,11 @@ export function usePeriodDays() {
   }
 
   const addPeriodDay = async (date) => {
-    // Optimistic update
     setPeriodDays(prev => [...prev, date])
 
     const { error } = await supabase
       .from('period_days')
-      .upsert({ date }, { onConflict: 'date' })
+      .upsert({ user_id: user.id, date }, { onConflict: 'date' })
 
     if (error) {
       console.error('Error adding period day:', error)
@@ -37,12 +37,12 @@ export function usePeriodDays() {
   }
 
   const removePeriodDay = async (date) => {
-    // Optimistic update
     setPeriodDays(prev => prev.filter(d => d !== date))
 
     const { error } = await supabase
       .from('period_days')
       .delete()
+      .eq('user_id', user.id)
       .eq('date', date)
 
     if (error) {
@@ -50,5 +50,18 @@ export function usePeriodDays() {
     }
   }
 
-  return { periodDays, loading, addPeriodDay, removePeriodDay }
+  const batchAddPeriodDays = async (dates) => {
+    setPeriodDays(prev => [...new Set([...prev, ...dates])])
+
+    const rows = dates.map(date => ({ user_id: user.id, date }))
+    const { error } = await supabase
+      .from('period_days')
+      .upsert(rows, { onConflict: 'date' })
+
+    if (error) {
+      console.error('Error batch adding period days:', error)
+    }
+  }
+
+  return { periodDays, loading, addPeriodDay, removePeriodDay, batchAddPeriodDays }
 }
