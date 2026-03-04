@@ -142,6 +142,44 @@ before Vercel deploys. We'll add this in Chapter 1.
 
 ---
 
+## D008 — user_id added as nullable in Chapter 2, not Chapter 3
+
+**Date:** March 2026
+**Decision:** Include `user_id uuid` column in `daily_logs` and `period_days` tables from the start, even though auth doesn't exist yet.
+
+**Options considered:**
+- Leave user_id out entirely, add it via ALTER TABLE in Chapter 3
+- Add it now as nullable (can be empty until auth is wired up)
+
+**What we chose:** Add it now as nullable.
+
+**Why:**
+Adding a column to a table that already has data requires a migration — more complex than getting it right the first time. Since the tables were empty when we made this decision, dropping and recreating was clean and free. In Chapter 3, we'll make user_id required and tie it to real Supabase Auth user IDs.
+
+**The trade-off:** user_id will be null for all rows until Chapter 3. That's fine — no real users yet.
+
+**What we'd reconsider:** If we had real user data already in the table, we'd use ALTER TABLE instead of drop and recreate.
+
+---
+
+## D009 — Optimistic updates for log saving
+
+**Date:** March 2026
+**Decision:** Update the UI immediately when saving a log, without waiting for Supabase to confirm.
+
+**Options considered:**
+- Wait for Supabase response before updating UI (safe but feels slow)
+- Update UI immediately, save to Supabase in the background (optimistic)
+
+**What we chose:** Optimistic updates.
+
+**Why:**
+Waiting for a server response adds 200–500ms of lag that makes the app feel unresponsive. Optimistic updates make the app feel instant. If the save fails, we log the error — acceptable for now since data loss is unlikely on a stable connection.
+
+**What we'd add later:** Proper error handling that rolls back the UI if Supabase returns an error.
+
+---
+
 ## D007 — No TypeScript (for now)
 
 **Date:** March 2025 (session 1)

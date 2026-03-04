@@ -92,7 +92,7 @@ src/
 
 ---
 
-## CHAPTER 2 — Supabase (Real Data) ⬜
+## CHAPTER 2 — Supabase (Real Data) ✅
 
 **Goal:** Data survives a page refresh. Logs, period history saved to a real database.
 
@@ -109,7 +109,7 @@ src/
 - What tables does Lunar need? (users, logs, cycles, reports?)
 - What does each row look like?
 
-**Milestone:** Log a symptom, refresh the page, it's still there.
+**Milestone:** ✅ Log a symptom, refresh the page, it's still there.
 
 ---
 

@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { SEED, SEED_LOGS, SEED_NOTES, allPeriodDays, HORMONE_REPORTS } from "./lib/constants";
+import { SEED, SEED_NOTES, HORMONE_REPORTS } from "./lib/constants";
 import { todayKey } from "./lib/helpers";
+import { useLogs } from "./hooks/useLogs";
+import { usePeriodDays } from "./hooks/usePeriodDays";
 import Styles from "./components/Styles";
 import TabBar from "./components/TabBar";
 import LogModal from "./components/LogModal";
@@ -15,9 +17,7 @@ import RecordsScreen from "./screens/RecordsScreen";
 export default function LunarApp() {
   const [tab, setTab] = useState("home");
   const [appData, setAppData] = useState(SEED);
-  const [logs, setLogs] = useState(SEED_LOGS);
   const [notes, setNotes] = useState(SEED_NOTES);
-  const [periodDays, setPeriodDays] = useState(allPeriodDays);
   const [reports] = useState(HORMONE_REPORTS);
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [logDate, setLogDate] = useState(null);
@@ -25,12 +25,26 @@ export default function LunarApp() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  // Real data from Supabase — replaces SEED_LOGS and allPeriodDays
+  const { logs, saveLog } = useLogs();
+  const { periodDays, addPeriodDay, removePeriodDay } = usePeriodDays();
+
   const handleSaveLog = (log) => {
     const key = logDate || todayKey();
-    setLogs((p) => ({ ...p, [key]: log }));
+    saveLog(key, log);
     if (log.note) setNotes((p) => [{ date: key, text: log.note }, ...p.filter(n => n.date !== key)]);
     if (key === todayKey()) setAppData((p) => ({ ...p, todayLog: log }));
     setLogDate(null);
+  };
+
+  const handleTogglePeriod = () => {
+    const today = todayKey();
+    if (appData.isOnPeriod) {
+      removePeriodDay(today);
+    } else {
+      addPeriodDay(today);
+    }
+    setAppData((p) => ({ ...p, isOnPeriod: !p.isOnPeriod }));
   };
 
   const dayLabel = logDate
@@ -50,7 +64,7 @@ export default function LunarApp() {
           </div>
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            {tab === "home" && <HomeScreen data={appData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onTogglePeriod={() => setAppData((p) => ({ ...p, isOnPeriod: !p.isOnPeriod }))} onOpenSettings={() => setIsSettingsOpen(true)} />}
+            {tab === "home" && <HomeScreen data={appData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onTogglePeriod={handleTogglePeriod} onOpenSettings={() => setIsSettingsOpen(true)} />}
             {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} />}
             {tab === "ask" && <AskLunarScreen />}
             {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} />}

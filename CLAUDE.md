@@ -15,7 +15,7 @@ Goal: build Lunar into a solid product to demonstrate engineering thinking for c
 
 - **Always explain WHY before WHAT.** Never just execute.
 - **Workflow: Exploration → Plan → Build → Review.** Never skip phases.
-- **After every file change: test locally at localhost:5173** before moving on.
+- **After every file change: test locally** (usually localhost:5173 or 5174 — Vite picks the next free port) before moving on.
 - **Give two options at every decision:** the enterprise way AND the solo builder shortcut.
 - **Push understanding, not just task completion.** Don't let Rachita stay comfortable.
 - **Plain English first.** Technical terms need explaining when first introduced.
