@@ -31,8 +31,15 @@ export default function LunarApp() {
   const INITIAL_MESSAGE = { role: "ai", text: "Hey! What's on your mind? You can ask me anything about your cycle, how you've been feeling, or your health records." };
   const [chatMessages, setChatMessages] = useState([INITIAL_MESSAGE]);
 
-  // Reset to home tab whenever the user logs in
-  useEffect(() => { if (user) setTab("home"); }, [user]);
+  // Reset to home tab and close all modals whenever the user logs in
+  useEffect(() => {
+    if (user) {
+      setTab("home");
+      setIsSettingsOpen(false);
+      setIsLogOpen(false);
+      setIsUploadOpen(false);
+    }
+  }, [user]);
 
   // Pass user to hooks so they scope data to the logged-in user
   const { logs, saveLog } = useLogs(user);
