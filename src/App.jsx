@@ -90,9 +90,9 @@ export default function LunarApp() {
   return (
     <>
       <Styles />
-      <div style={{ minHeight: "100dvh", background: "#C8C0B8", display: "flex", justifyContent: "center", alignItems: "center", padding: "24px 0" }}>
-        <div style={{ width: 390, height: "min(844px, calc(100dvh - 48px))", background: "#F7F3EE", borderRadius: 50, boxShadow: "0 40px 100px rgba(0,0,0,0.28)", display: "flex", flexDirection: "column", position: "relative" }}>
-          <div style={{ position: "absolute", inset: 0, borderRadius: 50, overflow: "hidden", pointerEvents: "none", zIndex: 100 }} />
+      <div style={{ height: "100dvh", background: "#F7F3EE", display: "flex", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: 430, height: "100dvh", background: "#F7F3EE", display: "flex", flexDirection: "column", position: "relative" }}>
+          <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 100 }} />
 
           {/* Show auth screen if not logged in, otherwise show the app */}
           {!user ? (
