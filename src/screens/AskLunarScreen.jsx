@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { C, F } from "../lib/constants";
 import { AI_SUGGESTIONS } from "../lib/ai";
 
-const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, onKeyboardToggle }) => {
+const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat }) => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef(null);
@@ -11,12 +11,14 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, onKeyb
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isTyping]);
 
-  // When keyboard opens/closes, scroll to the latest message
+  // When keyboard opens: iOS Chrome scrolls the page up (even with position:fixed).
+  // Reset page scroll to 0 immediately, then scroll messages to the latest.
   useEffect(() => {
     const onViewportResize = () => {
+      window.scrollTo(0, 0);
       setTimeout(() => {
         if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      }, 100);
+      }, 50);
     };
     window.visualViewport?.addEventListener('resize', onViewportResize);
     return () => window.visualViewport?.removeEventListener('resize', onViewportResize);
@@ -94,8 +96,8 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, onKeyb
       </div>
 
       <div style={{ padding: "10px 14px 12px", borderTop: `1px solid ${C.border}`, flexShrink: 0, display: "flex", gap: 10, alignItems: "flex-end", background: C.bg }}>
-        <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }} onFocus={() => onKeyboardToggle?.(true)} onBlur={() => onKeyboardToggle?.(false)} placeholder="Message Lunar…" rows={1} style={{ flex: 1, padding: "11px 14px", borderRadius: 20, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 16, color: C.text, resize: "none", outline: "none", lineHeight: 1.5 }} />
-        <button className="press" onClick={() => handleSend()} disabled={isTyping} style={{ width: 42, height: 42, borderRadius: "50%", background: input.trim() && !isTyping ? `linear-gradient(135deg, ${C.primary}, ${C.rose})` : C.border, fontSize: 18, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: input.trim() && !isTyping ? C.white : C.textMuted }}>→</button>
+        <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }} placeholder="Message Lunar…" rows={1} style={{ flex: 1, padding: "11px 14px", borderRadius: 20, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 16, color: C.text, resize: "none", outline: "none", lineHeight: 1.5 }} />
+        <button className="press" onPointerDown={(e) => e.preventDefault()} onClick={() => handleSend()} disabled={isTyping} style={{ width: 42, height: 42, borderRadius: "50%", background: input.trim() && !isTyping ? `linear-gradient(135deg, ${C.primary}, ${C.rose})` : C.border, fontSize: 18, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: input.trim() && !isTyping ? C.white : C.textMuted }}>→</button>
       </div>
     </div>
   );
