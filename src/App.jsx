@@ -90,7 +90,7 @@ export default function LunarApp() {
   return (
     <>
       <Styles />
-      <div style={{ position: "fixed", inset: 0, background: "#F7F3EE", display: "flex", justifyContent: "center" }}>
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "var(--app-height, 100svh)", background: "#F7F3EE", display: "flex", justifyContent: "center" }}>
         <div style={{ width: "100%", maxWidth: 430, height: "100%", background: "#F7F3EE", display: "flex", flexDirection: "column", position: "relative" }}>
           <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 100 }} />
 
