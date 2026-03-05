@@ -40,7 +40,7 @@ api/
   ask.js       — Serverless function for Claude API calls
 ```
 
-The AI runs server-side via a Vercel serverless function — the Anthropic API key never reaches the browser. Each request passes the user's cycle data and logs as context so Claude can answer questions grounded in real data rather than generic advice.
+Each request passes the user's cycle data and logs as context so Claude can answer questions grounded in real data rather than generic advice.
 
 Data is scoped per user via Supabase Row Level Security policies — the database itself enforces that users can only read and write their own rows.
 
