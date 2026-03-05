@@ -2,11 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { C, F } from "../lib/constants";
 import { AI_SUGGESTIONS } from "../lib/ai";
 
-const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboardOpen }) => {
+const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboardOpen, onSaveMemories }) => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [memoryNote, setMemoryNote] = useState(null);
   const scrollRef = useRef(null);
+
+  // Show "Noted" notification for 2.5s when a new memory is saved
+  useEffect(() => {
+    if (!memoryNote) return;
+    const t = setTimeout(() => setMemoryNote(null), 2500);
+    return () => clearTimeout(t);
+  }, [memoryNote]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -50,6 +58,10 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboa
       });
       const data = await res.json();
       onMessagesChange((p) => [...p, { role: "ai", text: data.answer || data.error || "Something went wrong." }]);
+      if (data.newFacts?.length) {
+        onSaveMemories?.(data.newFacts);
+        setMemoryNote(data.newFacts[0]);
+      }
     } catch {
       onMessagesChange((p) => [...p, { role: "ai", text: "Couldn't reach Lunar right now. Check your connection and try again." }]);
     } finally {
@@ -85,6 +97,14 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboa
             </div>
           </div>
         </>
+      )}
+
+      {memoryNote && (
+        <div style={{ padding: "6px 16px", flexShrink: 0 }}>
+          <span style={{ fontFamily: F.body, fontSize: 11, color: C.textSec, background: C.white, border: `1px solid ${C.border}`, borderRadius: 20, padding: "4px 12px" }}>
+            ✓ Noted — {memoryNote}
+          </span>
+        </div>
       )}
 
       <div ref={scrollRef} onScroll={handleScroll} style={{ flex: 1, overflowY: "auto", padding: "14px 16px 8px" }}>
