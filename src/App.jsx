@@ -90,8 +90,8 @@ export default function LunarApp() {
   return (
     <>
       <Styles />
-      <div style={{ height: "100dvh", background: "#F7F3EE", display: "flex", justifyContent: "center" }}>
-        <div style={{ width: "100%", maxWidth: 430, height: "100dvh", background: "#F7F3EE", display: "flex", flexDirection: "column", position: "relative" }}>
+      <div style={{ position: "fixed", inset: 0, background: "#F7F3EE", display: "flex", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: 430, height: "100%", background: "#F7F3EE", display: "flex", flexDirection: "column", position: "relative" }}>
           <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 100 }} />
 
           {/* Show auth screen if not logged in, otherwise show the app */}
