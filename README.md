@@ -40,9 +40,9 @@ api/
   ask.js       — Serverless function for Claude API calls
 ```
 
-Each request passes the user's cycle data and logs as context so Claude can answer questions grounded in real data rather than generic advice.
+**AI context** — each request to Claude includes the user's cycle history, recent logs, and hormone data, so responses are grounded in real data rather than generic advice.
 
-Data is scoped per user via Supabase Row Level Security policies — the database itself enforces that users can only read and write their own rows.
+**Data isolation** — Supabase Row Level Security policies ensure users can only read and write their own rows at the database level.
 
 ---
 
