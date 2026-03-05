@@ -22,14 +22,21 @@ export default function LunarApp() {
   const [tab, setTab] = useState("home");
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
-  // Detect keyboard open by watching visual viewport height (works on iOS Chrome)
+  // Detect keyboard open: compare visual viewport against the initial window height.
+  // window.innerHeight stays constant on iOS when keyboard opens; visualViewport shrinks.
+  // We also listen to window.resize as a fallback for browsers where visualViewport events are unreliable.
   useEffect(() => {
+    const INITIAL_HEIGHT = window.innerHeight;
     const check = () => {
       const vvh = window.visualViewport?.height ?? window.innerHeight;
-      setKeyboardOpen((window.innerHeight - vvh) > 150);
+      setKeyboardOpen(INITIAL_HEIGHT - vvh > 150);
     };
     window.visualViewport?.addEventListener('resize', check);
-    return () => window.visualViewport?.removeEventListener('resize', check);
+    window.addEventListener('resize', check);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', check);
+      window.removeEventListener('resize', check);
+    };
   }, []);
   const [appData, setAppData] = useState(SEED);
   const [notes, setNotes] = useState(SEED_NOTES);
@@ -113,7 +120,7 @@ export default function LunarApp() {
               <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                 {tab === "home" && <HomeScreen data={displayData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onOpenSettings={() => setIsSettingsOpen(true)} userName={user.user_metadata?.full_name || user.email.split('@')[0]} onBatchAddPeriodDays={batchAddPeriodDays} onRemovePeriodDay={removePeriodDay} />}
                 {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} onOpenLog={(date) => { setLogDate(date); setIsLogOpen(true); }} onAddPeriodDay={addPeriodDay} onRemovePeriodDay={removePeriodDay} />}
-                {tab === "ask" && <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} context={{
+                {tab === "ask" && <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} keyboardOpen={keyboardOpen} context={{
                   userName: user.user_metadata?.full_name || user.email.split('@')[0],
                   today: todayKey(),
                   cycleDay: cycleData.cycleDay,
