@@ -100,5 +100,26 @@ export const computeCycleData = (periodDays) => {
     });
   }
 
+  // Add the most recent (current) cycle as the first entry — it won't appear in the loop above
+  // because there's no next start to close it yet
+  // (lastStart and lastStartDate are already declared above)
+  let currentPeriodLength = 0;
+  const cd = new Date(lastStartDate);
+  while (daySet.has(toKey(cd.getFullYear(), cd.getMonth(), cd.getDate()))) {
+    currentPeriodLength++;
+    cd.setDate(cd.getDate() + 1);
+  }
+  const currentPeriodEnd = new Date(lastStartDate);
+  currentPeriodEnd.setDate(currentPeriodEnd.getDate() + Math.max(currentPeriodLength - 1, 0));
+  const currentLabel = currentPeriodLength > 0
+    ? `${fmt(lastStart)} – ${fmt(currentPeriodEnd.toISOString().slice(0, 10))}`
+    : fmt(lastStart);
+  cycleHistory.unshift({
+    label: currentLabel,
+    cycleLength: null, // cycle not complete yet
+    periodLength: currentPeriodLength || null,
+    current: true,
+  });
+
   return { isOnPeriod, cycleDay, daysUntilNextPeriod, nextPeriodDate, predictedCycleLength, predictedDays, cycleHistory };
 };

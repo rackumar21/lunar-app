@@ -113,7 +113,7 @@ src/
 
 ---
 
-## CHAPTER 3 — Authentication ⬜
+## CHAPTER 3 — Authentication ✅
 
 **Goal:** Real login. Real user. Each person sees only their own data.
 
@@ -123,11 +123,11 @@ src/
 - Row Level Security — how the database enforces "only you see yours"
 - What "going from 1 user to N users" actually requires architecturally
 
-**Milestone:** Sign up, log in, log out. Data is private per user.
+**Milestone:** ✅ Sign up, log in, log out. Data is private per user.
 
 ---
 
-## CHAPTER 4 — Real AI ⬜
+## CHAPTER 4 — Real AI ✅
 
 **Goal:** Replace the keyword-matching fake AI with a real Claude API call.
 
@@ -138,7 +138,7 @@ src/
 - What makes an AI feature genuinely useful vs. gimmicky
 - Anthropic API setup and costs
 
-**Milestone:** Ask Lunar a question about your actual logged data, get a real answer.
+**Milestone:** ✅ Ask Lunar a question about your actual logged data, get a real answer.
 
 ---
 

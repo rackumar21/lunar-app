@@ -1,5 +1,5 @@
 ---
-name: status
+name: session
 description: Session start — read the plan, orient on where we are, and set up for the session. Use at the start of every working session.
 ---
 

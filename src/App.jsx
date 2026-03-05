@@ -28,6 +28,8 @@ export default function LunarApp() {
   const [selectedReport, setSelectedReport] = useState(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const INITIAL_MESSAGE = { role: "ai", text: "Hey! What's on your mind? You can ask me anything about your cycle, how you've been feeling, or your health records." };
+  const [chatMessages, setChatMessages] = useState([INITIAL_MESSAGE]);
 
   // Reset to home tab whenever the user logs in
   useEffect(() => { if (user) setTab("home"); }, [user]);
@@ -85,7 +87,21 @@ export default function LunarApp() {
               <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                 {tab === "home" && <HomeScreen data={displayData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onOpenSettings={() => setIsSettingsOpen(true)} userName={user.email.split('@')[0]} onBatchAddPeriodDays={batchAddPeriodDays} onRemovePeriodDay={removePeriodDay} />}
                 {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} onOpenLog={(date) => { setLogDate(date); setIsLogOpen(true); }} onAddPeriodDay={addPeriodDay} onRemovePeriodDay={removePeriodDay} />}
-                {tab === "ask" && <AskLunarScreen />}
+                {tab === "ask" && <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => setChatMessages([INITIAL_MESSAGE])} context={{
+                  userName: user.email.split('@')[0],
+                  today: todayKey(),
+                  cycleDay: cycleData.cycleDay,
+                  predictedCycleLength: cycleData.predictedCycleLength,
+                  daysUntilNextPeriod: cycleData.daysUntilNextPeriod,
+                  nextPeriodDate: cycleData.nextPeriodDate,
+                  isOnPeriod: cycleData.isOnPeriod,
+                  recentPeriods: cycleData.cycleHistory || [],
+                  recentLogs: Object.entries(logs)
+                    .filter(([date]) => date >= new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10))
+                    .map(([date, log]) => ({ date, ...log }))
+                    .sort((a, b) => b.date.localeCompare(a.date)),
+                  hormoneReports: reports,
+                }} />}
                 {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} />}
               </div>
               <TabBar active={tab} onChange={setTab} />

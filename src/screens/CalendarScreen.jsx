@@ -186,9 +186,11 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
               {cycleHistory.map((cycle, i) => (
                 <div key={cycle.label} style={{ padding: "13px 16px", borderBottom: i < cycleHistory.length - 1 ? `1px solid ${C.border}` : "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div>
-                    <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec, marginBottom: 3 }}>{cycle.label}</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+                      <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec }}>{cycle.label}</p>
+                    </div>
                     <div style={{ display: "flex", gap: 12 }}>
-                      <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Cycle <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.cycleLength}d</span></p>
+                      {cycle.cycleLength && <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Cycle <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.cycleLength}d</span></p>}
                       {cycle.periodLength && <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Period <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.periodLength}d</span></p>}
                     </div>
                   </div>
