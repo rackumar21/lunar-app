@@ -50,10 +50,13 @@ const AuthScreen = ({ onSignIn, onSignUp }) => {
       </div>
 
       {/* Fields */}
+      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} style={{ marginBottom: 0 }}>
       <div style={{ marginBottom: 14 }}>
         <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.textMuted, marginBottom: 6 }}>Email</p>
         <input
           type="email"
+          name="email"
+          autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
@@ -64,10 +67,11 @@ const AuthScreen = ({ onSignIn, onSignUp }) => {
         <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.textMuted, marginBottom: 6 }}>Password</p>
         <input
           type="password"
+          name="password"
+          autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="6+ characters"
-          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           style={{ width: '100%', padding: '13px 14px', borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: 'none' }}
         />
       </div>
@@ -86,13 +90,14 @@ const AuthScreen = ({ onSignIn, onSignUp }) => {
 
       {/* Submit */}
       <button
+        type="submit"
         className="press"
-        onClick={handleSubmit}
         disabled={loading}
         style={{ width: '100%', padding: '15px', borderRadius: 14, background: `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontFamily: F.body, fontSize: 14, fontWeight: 600, color: C.white, opacity: loading ? 0.7 : 1 }}
       >
         {loading ? 'Just a moment…' : mode === 'login' ? 'Log in' : 'Create account'}
       </button>
+      </form>
     </div>
   )
 }
