@@ -142,7 +142,7 @@ src/
 
 ---
 
-## CHAPTER 5 — Polish ⬜
+## CHAPTER 5 — Polish 🔄
 
 **Goal:** Make it look and behave like something a real engineer built.
 
@@ -151,9 +151,20 @@ src/
 - Error monitoring — Sentry, knowing when something breaks in production
 - GitHub Actions — more sophisticated CI (lint checks, build checks)
 - Analytics basics — what to track and why
-- README — write the one that gets you the interview
 
-**Milestone:** App handles failures gracefully. GitHub shows green checks. README tells the story.
+**Completed so far:**
+- ✅ README rewritten (professional, product-focused)
+- ✅ PWA setup — installable on iPhone, custom moon icon, manifest.json
+- ✅ Full-screen mobile layout (removed phone mockup)
+- ✅ iOS keyboard behaviour fixed (blank screen, send button, header hiding)
+- ✅ Persistent AI memory — Lunar learns health facts from conversations
+
+**Remaining:**
+- ⬜ Error handling (Supabase down, Claude timeout)
+- ⬜ GitHub Actions CI
+- ⬜ Analytics
+
+**Milestone:** App handles failures gracefully. GitHub shows green checks.
 
 ---
 
@@ -171,7 +182,9 @@ src/
 
 ## Open questions / decisions to revisit
 
-- Should we add a mobile-responsive layout or keep it as a phone mockup?
+- ~~Should we add a mobile-responsive layout or keep it as a phone mockup?~~ → Done. Full-screen mobile.
 - When do we add a custom domain for lunar-app?
 - Do we want Apple Health integration in scope for this project?
 - When does Lunar go from "Rachita's project" to "a product with other users"?
+- Should memories migrate from localStorage to Supabase (so they sync across devices)?
+- Should users be able to view and edit their saved memories?

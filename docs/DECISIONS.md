@@ -180,6 +180,73 @@ Waiting for a server response adds 200–500ms of lag that makes the app feel un
 
 ---
 
+## D010 — PWA over native app
+
+**Date:** March 2026
+**Decision:** Make Lunar installable as a Progressive Web App (PWA) rather than building a native iOS/Android app.
+
+**Options considered:**
+- Native iOS app (Swift/Xcode)
+- React Native (cross-platform native)
+- PWA (installable web app)
+
+**What we chose:** PWA
+
+**Why:** No app store submission, no review process, no separate codebase. The same React code that runs in the browser installs to the home screen. For a solo builder proving a concept, this is the right call. A PWA has all the same limitations as a mobile website (no push notifications on iOS, no background sync) but for Lunar's current use case it's sufficient.
+
+**Trade-off:** iOS PWAs have limitations Safari doesn't: no push notifications, limited background behaviour. If Lunar ever needs to remind users about period predictions, we'd need native or a service like OneSignal.
+
+---
+
+## D011 — iOS keyboard handling approach
+
+**Date:** March 2026
+**Decision:** Three-part fix for iOS keyboard resize in the Ask Lunar chat screen.
+
+**What we tried and rejected:**
+1. `interactive-widget=overlays-content` in viewport meta — only works on Android Chrome, ignored on iOS
+2. `onFocus`/`onBlur` to detect keyboard — caused layout shift when tapping the send button (blur fires before the tap registers)
+3. `window.innerHeight - visualViewport.height > 150` comparison — unreliable because on some iOS Chrome versions both values change together
+
+**What we chose (and why it works):**
+- `textarea font-size: 16px` — iOS auto-zooms the entire page when any input is smaller than 16px. This was the root cause of the initial zoom issue.
+- `window.scrollTo(0, 0)` in the visualViewport resize handler — iOS Chrome secretly scrolls the page up when keyboard opens, even with `position: fixed` layout. Resetting to 0 immediately undoes that.
+- `onPointerDown={(e) => e.preventDefault()}` on the send button — prevents the textarea from losing focus when tapping send, so the keyboard stays open.
+- `INITIAL_HEIGHT` (captured at mount) vs `visualViewport.height` for keyboard detection — more reliable than comparing two live values.
+
+---
+
+## D012 — localStorage for AI memory (not Supabase)
+
+**Date:** March 2026
+**Decision:** Store Lunar's learned memories about the user in `localStorage`, not in Supabase.
+
+**Options considered:**
+- Supabase `user_memories` table (persistent across devices, requires migration)
+- localStorage keyed by user ID (device-local, no migration needed)
+
+**What we chose:** localStorage
+
+**Why:** Faster to ship, no database migration required, no new API endpoints. The data is per-user (keyed by `lunar_memory_{userId}`) so it doesn't leak between accounts. The main downside — memories lost if you clear your browser or switch devices — is acceptable for an MVP. Migration to Supabase is straightforward if needed later.
+
+---
+
+## D013 — Parallel API calls for memory extraction
+
+**Date:** March 2026
+**Decision:** Run memory extraction and answer generation as two parallel API calls, not sequential.
+
+**Options considered:**
+- Sequential: generate answer → then extract facts (adds 300–500ms latency)
+- Single call with structured JSON output (brittle — model sometimes ignores format)
+- Parallel: `Promise.all([answerCall, memoryCall])` — both run at once
+
+**What we chose:** Parallel calls using `Promise.all`.
+
+**Why:** Zero added latency for the user — both calls complete in the same time as a single call. The memory extraction uses `claude-haiku-4-5-20251001` (cheap, fast, focused) while the main answer uses `claude-sonnet-4-6`. Total cost increase per message is negligible.
+
+---
+
 ## D007 — No TypeScript (for now)
 
 **Date:** March 2025 (session 1)

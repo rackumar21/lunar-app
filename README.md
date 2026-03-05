@@ -11,8 +11,10 @@ A personal health companion for menstrual cycle tracking, symptom logging, and A
 - **Cycle tracking** — log period days, get predictions based on your actual history
 - **Daily logging** — mood, pain, flow, symptoms, weight, notes
 - **Ask Lunar** — AI assistant with access to your real cycle data and logs
+- **Persistent memory** — tell Lunar something once (e.g. "I have PCOD") and it remembers across all future conversations
 - **Hormone reports** — upload and view lab results
 - **Per-user data** — auth with row-level security, each user's data is private
+- **PWA** — installable on iPhone via Safari, works like a native app
 
 ---
 
