@@ -26,6 +26,7 @@ export function useLogs(user) {
           flow: row.flow,
           symptoms: row.symptoms || [],
           note: row.note || '',
+          weight: row.weight || null,
         }
       })
       setLogs(logsObj)
@@ -40,7 +41,7 @@ export function useLogs(user) {
     const { error } = await supabase
       .from('daily_logs')
       .upsert(
-        { user_id: user.id, date, mood: log.mood, pain: log.pain, flow: log.flow, symptoms: log.symptoms, note: log.note },
+        { user_id: user.id, date, mood: log.mood, pain: log.pain, flow: log.flow, symptoms: log.symptoms, note: log.note, weight: log.weight },
         { onConflict: 'date' }
       )
 

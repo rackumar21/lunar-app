@@ -11,14 +11,15 @@ const LogModal = ({ isOpen, onClose, isOnPeriod, existingLog, onSave, dateLabel 
   const [flow, setFlow] = useState(existingLog?.flow || "Medium");
   const [symptoms, setSymptoms] = useState(existingLog?.symptoms || []);
   const [note, setNote] = useState(existingLog?.note || "");
+  const [weight, setWeight] = useState(existingLog?.weight || "");
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    if (existingLog) { setMood(existingLog.mood || null); setPain(existingLog.pain ?? 0); setFlow(existingLog.flow || "Medium"); setSymptoms(existingLog.symptoms || []); setNote(existingLog.note || ""); }
+    if (existingLog) { setMood(existingLog.mood || null); setPain(existingLog.pain ?? 0); setFlow(existingLog.flow || "Medium"); setSymptoms(existingLog.symptoms || []); setNote(existingLog.note || ""); setWeight(existingLog.weight || ""); }
   }, [existingLog]);
 
   const toggle = (s) => setSymptoms((p) => p.includes(s) ? p.filter((x) => x !== s) : [...p, s]);
-  const handleSave = () => { setSaved(true); setTimeout(() => { onSave({ mood, pain, flow, symptoms, note }); onClose(); setSaved(false); }, 500); };
+  const handleSave = () => { setSaved(true); setTimeout(() => { onSave({ mood, pain, flow, symptoms, note, weight: weight ? parseFloat(weight) : null }); onClose(); setSaved(false); }, 500); };
 
   if (!isOpen) return null;
   return (
@@ -57,6 +58,18 @@ const LogModal = ({ isOpen, onClose, isOnPeriod, existingLog, onSave, dateLabel 
             {SYMPTOMS.map((s) => (
               <button key={s} className="press" onClick={() => toggle(s)} style={{ padding: "7px 13px", borderRadius: 20, border: `1.5px solid ${symptoms.includes(s) ? C.accent : C.border}`, background: symptoms.includes(s) ? C.accentLight : C.white, fontFamily: F.body, fontSize: 12, color: symptoms.includes(s) ? C.accent : C.textSec, fontWeight: symptoms.includes(s) ? 600 : 400 }}>{s}</button>
             ))}
+          </div>
+          <Label>Weight (optional)</Label>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
+            <input
+              type="number"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              placeholder="e.g. 62"
+              min="20" max="300" step="0.1"
+              style={{ width: 100, padding: "11px 14px", borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: "none" }}
+            />
+            <span style={{ fontFamily: F.body, fontSize: 13, color: C.textSec }}>kg</span>
           </div>
           <Label>Note (optional)</Label>
           <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Anything else worth remembering..." rows={3} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, resize: "none", outline: "none", lineHeight: 1.6, marginBottom: 20 }} />
