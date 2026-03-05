@@ -59,19 +59,19 @@ const LogModal = ({ isOpen, onClose, isOnPeriod, existingLog, onSave, dateLabel 
               <button key={s} className="press" onClick={() => toggle(s)} style={{ padding: "7px 13px", borderRadius: 20, border: `1.5px solid ${symptoms.includes(s) ? C.accent : C.border}`, background: symptoms.includes(s) ? C.accentLight : C.white, fontFamily: F.body, fontSize: 12, color: symptoms.includes(s) ? C.accent : C.textSec, fontWeight: symptoms.includes(s) ? 600 : 400 }}>{s}</button>
             ))}
           </div>
-          <Label>Weight (optional)</Label>
+          <Label>Weight</Label>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
             <input
               type="number"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
-              placeholder="e.g. 62"
+              placeholder=""
               min="20" max="300" step="0.1"
               style={{ width: 100, padding: "11px 14px", borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: "none" }}
             />
             <span style={{ fontFamily: F.body, fontSize: 13, color: C.textSec }}>kg</span>
           </div>
-          <Label>Note (optional)</Label>
+          <Label>Note</Label>
           <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Anything else worth remembering..." rows={3} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, resize: "none", outline: "none", lineHeight: 1.6, marginBottom: 20 }} />
           <button className="press" onClick={handleSave} style={{ width: "100%", padding: "15px", borderRadius: 14, background: saved ? C.success : `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontFamily: F.body, fontSize: 14, fontWeight: 600, color: C.white, transition: "background 0.3s" }}>
             {saved ? "✓ Saved" : "Save log"}

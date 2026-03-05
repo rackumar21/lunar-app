@@ -3,6 +3,7 @@ import { C, F } from '../lib/constants'
 
 const AuthScreen = ({ onSignIn, onSignUp }) => {
   const [mode, setMode] = useState('login') // 'login' or 'signup'
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
@@ -19,7 +20,7 @@ const AuthScreen = ({ onSignIn, onSignUp }) => {
       const { error } = await onSignIn(email, password)
       if (error) setError(error.message)
     } else {
-      const { error } = await onSignUp(email, password)
+      const { error } = await onSignUp(email, password, name.trim())
       if (error) {
         setError(error.message)
       } else {
@@ -51,6 +52,20 @@ const AuthScreen = ({ onSignIn, onSignUp }) => {
 
       {/* Fields */}
       <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} style={{ marginBottom: 0 }}>
+      {mode === 'signup' && (
+        <div style={{ marginBottom: 14 }}>
+          <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.textMuted, marginBottom: 6 }}>First name</p>
+          <input
+            type="text"
+            name="name"
+            autoComplete="given-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Rachita"
+            style={{ width: '100%', padding: '13px 14px', borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: 'none' }}
+          />
+        </div>
+      )}
       <div style={{ marginBottom: 14 }}>
         <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.textMuted, marginBottom: 6 }}>Email</p>
         <input
