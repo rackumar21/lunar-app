@@ -90,14 +90,9 @@ export default function LunarApp() {
   return (
     <>
       <Styles />
-      <div style={{ minHeight: "100vh", background: "#C8C0B8", display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "24px 0" }}>
-        <div style={{ width: 390, height: 844, background: "#F7F3EE", borderRadius: 50, boxShadow: "0 40px 100px rgba(0,0,0,0.28)", display: "flex", flexDirection: "column", position: "relative" }}>
+      <div style={{ minHeight: "100dvh", background: "#C8C0B8", display: "flex", justifyContent: "center", alignItems: "center", padding: "24px 0" }}>
+        <div style={{ width: 390, height: "min(844px, calc(100dvh - 48px))", background: "#F7F3EE", borderRadius: 50, boxShadow: "0 40px 100px rgba(0,0,0,0.28)", display: "flex", flexDirection: "column", position: "relative" }}>
           <div style={{ position: "absolute", inset: 0, borderRadius: 50, overflow: "hidden", pointerEvents: "none", zIndex: 100 }} />
-
-          <div style={{ background: "#F7F3EE", padding: "14px 24px 0", display: "flex", justifyContent: "space-between", flexShrink: 0 }}>
-            <span style={{ fontFamily: "'Libre Franklin', system-ui, sans-serif", fontSize: 12, fontWeight: 600, color: "#28211E" }}>9:41</span>
-            <span style={{ fontFamily: "'Libre Franklin', system-ui, sans-serif", fontSize: 11, color: "#28211E" }}>●●● WiFi 🔋</span>
-          </div>
 
           {/* Show auth screen if not logged in, otherwise show the app */}
           {!user ? (
