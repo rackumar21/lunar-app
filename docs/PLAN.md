@@ -142,29 +142,29 @@ src/
 
 ---
 
-## CHAPTER 5 — Polish 🔄
+## CHAPTER 5 — Polish ✅
 
 **Goal:** Make it look and behave like something a real engineer built.
 
-**What we'll learn:**
+**What we learned:**
 - Error handling — what happens when Supabase is down or the AI times out?
 - Error monitoring — Sentry, knowing when something breaks in production
 - GitHub Actions — more sophisticated CI (lint checks, build checks)
 - Analytics basics — what to track and why
 
-**Completed so far:**
+**Completed:**
 - ✅ README rewritten (professional, product-focused)
 - ✅ PWA setup — installable on iPhone, custom moon icon, manifest.json
 - ✅ Full-screen mobile layout (removed phone mockup)
 - ✅ iOS keyboard behaviour fixed (blank screen, send button, header hiding)
 - ✅ Persistent AI memory — Lunar learns health facts from conversations
+- ✅ Toast error handling — non-blocking error UI with auto-dismiss
+- ✅ Structured logger (logger.js) — all errors flow through one file, Sentry-ready
+- ✅ Global catch-all — unhandled JS errors show a generic toast
+- ✅ GitHub Actions CI — build check on every push to main
+- ✅ Posthog analytics — AARRR-aligned event tracking, identified by user UUID
 
-**Remaining:**
-- ⬜ Error handling (Supabase down, Claude timeout)
-- ⬜ GitHub Actions CI
-- ⬜ Analytics
-
-**Milestone:** App handles failures gracefully. GitHub shows green checks.
+**Milestone:** ✅ App handles failures gracefully. GitHub shows green checks. Events flow to Posthog.
 
 ---
 
