@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { logger } from '../lib/logger'
 
-export function useLogs(user) {
+export function useLogs(user, onError) {
   const [logs, setLogs] = useState({})
   const [loading, setLoading] = useState(true)
 
@@ -16,7 +17,8 @@ export function useLogs(user) {
       .eq('user_id', user.id)
 
     if (error) {
-      console.error('Error fetching logs:', error)
+      logger.error('Failed to fetch logs', { userId: user.id, error: error.message })
+      onError?.("Couldn't load your logs. Check your connection.")
     } else {
       const logsObj = {}
       data.forEach(row => {
@@ -46,7 +48,8 @@ export function useLogs(user) {
       )
 
     if (error) {
-      console.error('Error saving log:', error)
+      logger.error('Failed to save log', { userId: user.id, date, error: error.message })
+      onError?.("Couldn't save your log. Check your connection.")
     }
   }
 

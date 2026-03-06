@@ -1,11 +1,13 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { SEED, SEED_NOTES, HORMONE_REPORTS, C, F } from "./lib/constants";
 import { todayKey, computeCycleData } from "./lib/helpers";
+import { logger } from "./lib/logger";
 import { useAuth } from "./hooks/useAuth";
 import { useLogs } from "./hooks/useLogs";
 import { usePeriodDays } from "./hooks/usePeriodDays";
 import Styles from "./components/Styles";
 import TabBar from "./components/TabBar";
+import Toast from "./components/Toast";
 import LogModal from "./components/LogModal";
 import RecordDetailModal from "./components/RecordDetailModal";
 import SettingsModal from "./components/SettingsModal";
@@ -18,6 +20,39 @@ import AuthScreen from "./screens/AuthScreen";
 
 export default function LunarApp() {
   const { user, loading: authLoading, signIn, signUp, signOut } = useAuth();
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  const [toast, setToast] = useState(null); // { message, type }
+
+  const showToast = useCallback((message, type = "error") => {
+    setToast({ message, type });
+  }, []);
+
+  // Auto-dismiss toast after 3.5s
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  // Global catch-all: any unhandled JS error or rejected Promise shows a generic toast
+  useEffect(() => {
+    const onError = (event) => {
+      logger.error("Uncaught error", { message: event.message, source: event.filename, line: event.lineno });
+      showToast("Something went wrong. Please try again.");
+    };
+    const onUnhandledRejection = (event) => {
+      logger.error("Unhandled promise rejection", { reason: String(event.reason) });
+      showToast("Something went wrong. Please try again.");
+    };
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onUnhandledRejection);
+    return () => {
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onUnhandledRejection);
+    };
+  }, [showToast]);
+  // ──────────────────────────────────────────────────────────────────────────
 
   const [tab, setTab] = useState("home");
   const [keyboardOpen, setKeyboardOpen] = useState(false);
@@ -90,8 +125,8 @@ export default function LunarApp() {
   }, [user]);
 
   // Pass user to hooks so they scope data to the logged-in user
-  const { logs, saveLog } = useLogs(user);
-  const { periodDays, addPeriodDay, removePeriodDay, batchAddPeriodDays } = usePeriodDays(user);
+  const { logs, saveLog } = useLogs(user, showToast);
+  const { periodDays, addPeriodDay, removePeriodDay, batchAddPeriodDays } = usePeriodDays(user, showToast);
 
   // Derive cycle state from real period data
   const cycleData = useMemo(() => computeCycleData(periodDays), [periodDays]);
@@ -169,6 +204,8 @@ export default function LunarApp() {
           <UploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSave={(r) => console.log("New report:", r)} />
         </>
       )}
+
+      <Toast message={toast?.message} type={toast?.type} />
     </>
   );
 }

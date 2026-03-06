@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { logger } from '../lib/logger'
 
-export function usePeriodDays(user) {
+export function usePeriodDays(user, onError) {
   const [periodDays, setPeriodDays] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -16,7 +17,8 @@ export function usePeriodDays(user) {
       .eq('user_id', user.id)
 
     if (error) {
-      console.error('Error fetching period days:', error)
+      logger.error('Failed to fetch period days', { userId: user.id, error: error.message })
+      onError?.("Couldn't load your cycle data. Check your connection.")
     } else {
       setPeriodDays(data.map(row => row.date))
     }
@@ -32,7 +34,8 @@ export function usePeriodDays(user) {
       .upsert({ user_id: user.id, date }, { onConflict: 'date' })
 
     if (error) {
-      console.error('Error adding period day:', error)
+      logger.error('Failed to add period day', { userId: user.id, date, error: error.message })
+      onError?.("Couldn't save. Check your connection.")
     }
   }
 
@@ -46,7 +49,8 @@ export function usePeriodDays(user) {
       .eq('date', date)
 
     if (error) {
-      console.error('Error removing period day:', error)
+      logger.error('Failed to remove period day', { userId: user.id, date, error: error.message })
+      onError?.("Couldn't save. Check your connection.")
     }
   }
 
@@ -59,7 +63,8 @@ export function usePeriodDays(user) {
       .upsert(rows, { onConflict: 'date' })
 
     if (error) {
-      console.error('Error batch adding period days:', error)
+      logger.error('Failed to batch add period days', { userId: user.id, dates, error: error.message })
+      onError?.("Couldn't save your period history. Check your connection.")
     }
   }
 
