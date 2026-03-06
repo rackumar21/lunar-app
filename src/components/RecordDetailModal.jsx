@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { C, F } from "../lib/constants";
 import { fmtMonth, statusColor, statusBg } from "../lib/helpers";
 import Handle from "./shared/Handle";
@@ -28,6 +29,7 @@ function getTrendNote(markerName, currentValue, currentDate, allReports) {
 }
 
 const RecordDetailModal = ({ report, onClose, allReports, onDelete }) => {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   if (!report) return null;
   return (
     <div className="fade-in" onClick={(e) => e.target === e.currentTarget && onClose()} style={{ position: "fixed", inset: 0, background: "rgba(40,33,30,0.55)", zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
@@ -39,14 +41,33 @@ const RecordDetailModal = ({ report, onClose, allReports, onDelete }) => {
             <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec, marginTop: 3 }}>{fmtMonth(report.date)}</p>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {onDelete && (
+            {onDelete && !confirmDelete && (
               <button
                 className="press"
-                onClick={() => { if (window.confirm("Delete this report?")) onDelete(report.id); }}
-                style={{ padding: "6px 12px", borderRadius: 10, border: `1px solid ${C.error}44`, background: C.errorMuted, fontFamily: C.body, fontSize: 11, fontWeight: 600, color: C.error }}
+                onClick={() => setConfirmDelete(true)}
+                style={{ padding: "6px 12px", borderRadius: 10, border: `1px solid ${C.error}44`, background: C.errorMuted, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: C.error }}
               >
                 Delete
               </button>
+            )}
+            {confirmDelete && (
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec }}>Delete?</p>
+                <button
+                  className="press"
+                  onClick={() => setConfirmDelete(false)}
+                  style={{ padding: "5px 11px", borderRadius: 10, border: `1px solid ${C.border}`, background: C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: C.textSec }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="press"
+                  onClick={() => onDelete(report.id)}
+                  style={{ padding: "5px 11px", borderRadius: 10, border: `1px solid ${C.error}44`, background: C.error, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: C.white }}
+                >
+                  Yes, delete
+                </button>
+              </div>
             )}
             <CloseBtn onClose={onClose} />
           </div>
