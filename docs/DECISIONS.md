@@ -247,6 +247,47 @@ Waiting for a server response adds 200–500ms of lag that makes the app feel un
 
 ---
 
+## D014 — PDF extraction: Sonnet over Haiku, 16K token limit
+
+**Date:** March 2026
+**Decision:** Use `claude-sonnet-4-6` with `max_tokens: 16384` for lab report extraction.
+
+**Options considered:**
+- `claude-haiku-4-5-20251001` with 4096 tokens (original — fast, cheap)
+- `claude-sonnet-4-6` with 8192 tokens (interim attempt)
+- `claude-sonnet-4-6` with 16384 tokens (final)
+
+**What we chose:** Sonnet + 16384 tokens
+
+**Why:**
+A real full-body checkup (Dr Lal PathLabs, 17 pages) has ~107 markers. The extracted JSON is ~9800 characters. At roughly 4 chars per token, that's ~2450 tokens just for data — but with marker names, units, and JSON structure overhead, 8192 tokens wasn't enough. The JSON was being cut off mid-object, causing a parse failure and "0 markers found".
+
+Haiku was also less reliable at following the complex extraction prompt (skipping urine microscopy, correctly identifying null status vs normal). Sonnet follows the instructions more precisely.
+
+**Trade-off:** Sonnet costs ~3–5x more per call than Haiku. For a personal health app processing occasional lab reports, this is negligible. If Lunar scaled to thousands of uploads per day, we'd revisit with prompt optimisation to reduce output size.
+
+**Lesson:** Always size `max_tokens` to the maximum realistic output, not a round number. "0 markers found" with no obvious error is a classic sign of silent truncation.
+
+---
+
+## D015 — Auto-detect report category from extracted markers
+
+**Date:** March 2026
+**Decision:** Remove the manual category selector from UploadModal. Infer category automatically from which markers Claude extracted.
+
+**Options considered:**
+- Keep manual selector (user picks Hormone Panel / Thyroid / etc.)
+- Auto-detect from marker names using keyword matching
+
+**What we chose:** Auto-detect
+
+**Why:**
+The user uploads a PDF and has already told us what's in it by choosing the file. Asking them to also categorise it is friction with no benefit — Claude just read the whole thing and knows exactly what's in it. Keyword matching on marker names (LH, FSH → Hormone Panel; TSH, T3 → Thyroid; Vitamin B12 → Vitamins & Minerals) is reliable enough for the current category set.
+
+**Trade-off:** If a report has both hormones and thyroid markers (common in full panels), it gets labelled "Hormone Panel" due to priority order. Acceptable for now.
+
+---
+
 ## D007 — No TypeScript (for now)
 
 **Date:** March 2025 (session 1)

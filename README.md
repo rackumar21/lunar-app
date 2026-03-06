@@ -12,7 +12,10 @@ A personal health companion for menstrual cycle tracking, symptom logging, and A
 - **Daily logging** — mood, pain, flow, symptoms, weight, notes
 - **Ask Lunar** — AI assistant with access to your real cycle data and logs
 - **Persistent memory** — tell Lunar something once (e.g. "I have PCOD") and it remembers across all future conversations
-- **Hormone reports** — upload and view lab results
+- **Lab report upload** — upload PDFs or images of blood reports; Claude reads them and extracts every marker automatically
+- **Auto-categorisation** — reports are labelled (Hormone Panel, Thyroid, Vitamins & Minerals, General Health) based on what markers were found
+- **Trend tracking** — see how each marker has changed compared to your previous report
+- **Multi-file upload** — attach multiple reports at once, processed in parallel
 - **Per-user data** — auth with row-level security, each user's data is private
 - **PWA** — installable on iPhone via Safari, works like a native app
 

@@ -163,8 +163,14 @@ src/
 - ✅ Global catch-all — unhandled JS errors show a generic toast
 - ✅ GitHub Actions CI — build check on every push to main
 - ✅ Posthog analytics — AARRR-aligned event tracking, identified by user UUID
+- ✅ PDF/image upload — Claude Vision extracts lab markers, saves to Supabase
+- ✅ Multi-file upload — select multiple PDFs at once, parallel processing
+- ✅ Auto-detect report category from extracted markers
+- ✅ Trend notes — RecordDetailModal shows change vs previous report
+- ✅ Delete report — inline confirmation (no browser popup)
+- ✅ Inline delete confirmation — replaced window.confirm() with in-modal UI
 
-**Milestone:** ✅ App handles failures gracefully. GitHub shows green checks. Events flow to Posthog.
+**Milestone:** ✅ App handles failures gracefully. GitHub shows green checks. Events flow to Posthog. Lab reports upload, extract, and save end-to-end.
 
 ---
 
