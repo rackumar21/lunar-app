@@ -1,0 +1,33 @@
+name: CI
+
+# Run this check on every push to main, and on every pull request
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build check
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download the code onto the temporary GitHub machine
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install Node.js
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      # Step 3: Install dependencies (same as running npm install locally)
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run the build — if this fails, the whole check fails
+      - name: Build
+        run: npm run build
