@@ -4,11 +4,14 @@
 import posthog from 'posthog-js';
 
 export function initAnalytics() {
-  posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
+  const key = import.meta.env.VITE_POSTHOG_KEY;
+  if (!key) {
+    console.warn('[Lunar] Posthog key missing — analytics disabled. Add VITE_POSTHOG_KEY to .env and Vercel.');
+    return;
+  }
+  posthog.init(key, {
     api_host: 'https://us.i.posthog.com',
-    // Don't track anything until we explicitly call identify() or capture()
     autocapture: false,
-    // Don't send a pageview automatically — we'll track tab views ourselves
     capture_pageview: false,
   });
 }
