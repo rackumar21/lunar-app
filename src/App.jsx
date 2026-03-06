@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { SEED, SEED_NOTES, HORMONE_REPORTS, C, F } from "./lib/constants";
 import { todayKey, computeCycleData } from "./lib/helpers";
 import { logger } from "./lib/logger";
+import { analytics } from "./lib/analytics";
 import { useAuth } from "./hooks/useAuth";
 import { useLogs } from "./hooks/useLogs";
 import { usePeriodDays } from "./hooks/usePeriodDays";
@@ -114,13 +115,18 @@ export default function LunarApp() {
     });
   };
 
-  // Reset to home tab and close all modals whenever the user logs in
+  // Reset to home tab and close all modals whenever the user logs in.
+  // Also identify them in analytics so events are tied to their user ID.
   useEffect(() => {
     if (user) {
       setTab("home");
       setIsSettingsOpen(false);
       setIsLogOpen(false);
       setIsUploadOpen(false);
+      analytics.identify(user.id);
+    } else {
+      // User logged out — clear analytics identity so events aren't mis-attributed
+      analytics.reset();
     }
   }, [user]);
 
@@ -138,6 +144,7 @@ export default function LunarApp() {
     if (log.note) setNotes((p) => [{ date: key, text: log.note }, ...p.filter(n => n.date !== key)]);
     if (key === todayKey()) setAppData((p) => ({ ...p, todayLog: log }));
     setLogDate(null);
+    analytics.track("log_saved");
   };
 
   const handleTogglePeriod = () => {
@@ -146,8 +153,14 @@ export default function LunarApp() {
       removePeriodDay(today);
     } else {
       addPeriodDay(today);
+      analytics.track("period_day_marked");
     }
     setAppData((p) => ({ ...p, isOnPeriod: !p.isOnPeriod }));
+  };
+
+  const handleTabChange = (newTab) => {
+    setTab(newTab);
+    analytics.track("tab_viewed", { tab: newTab });
   };
 
   const dayLabel = logDate
@@ -190,7 +203,7 @@ export default function LunarApp() {
                 }} />}
                 {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} />}
               </div>
-              {!(keyboardOpen && tab === "ask") && <TabBar active={tab} onChange={setTab} />}
+              {!(keyboardOpen && tab === "ask") && <TabBar active={tab} onChange={handleTabChange} />}
             </>
           )}
         </div>

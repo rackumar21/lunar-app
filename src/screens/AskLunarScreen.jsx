@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { C, F } from "../lib/constants";
 import { AI_SUGGESTIONS } from "../lib/ai";
+import { analytics } from "../lib/analytics";
 
 const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboardOpen, onSaveMemories }) => {
   const [input, setInput] = useState("");
@@ -47,6 +48,7 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboa
     const question = q || input.trim();
     if (!question || isTyping) return;
     onMessagesChange((p) => [...p, { role: "user", text: question }]);
+    analytics.track("ai_message_sent");
     setInput("");
     setIsTyping(true);
 
@@ -83,7 +85,7 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboa
                 </div>
               </div>
               {messages.length > 1 && (
-                <button className="press" onClick={onNewChat} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${C.border}`, background: C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: C.textSec }}>
+                <button className="press" onClick={() => { onNewChat(); analytics.track("new_chat_started"); }} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${C.border}`, background: C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: C.textSec }}>
                   New chat
                 </button>
               )}
