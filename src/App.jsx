@@ -144,6 +144,7 @@ export default function LunarApp() {
     if (log.note) setNotes((p) => [{ date: key, text: log.note }, ...p.filter(n => n.date !== key)]);
     if (key === todayKey()) setAppData((p) => ({ ...p, todayLog: log }));
     setLogDate(null);
+    if (Object.keys(logs).length === 0) analytics.track("first_log_saved");
     analytics.track("log_saved");
   };
 

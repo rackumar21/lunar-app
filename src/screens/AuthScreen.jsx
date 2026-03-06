@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { C, F } from '../lib/constants'
+import { analytics } from '../lib/analytics'
 
 const AuthScreen = ({ onSignIn, onSignUp }) => {
   const [mode, setMode] = useState('login') // 'login' or 'signup'
@@ -19,11 +20,13 @@ const AuthScreen = ({ onSignIn, onSignUp }) => {
     if (mode === 'login') {
       const { error } = await onSignIn(email, password)
       if (error) setError(error.message)
+      else analytics.track('signed_in')
     } else {
       const { error } = await onSignUp(email, password, name.trim())
       if (error) {
         setError(error.message)
       } else {
+        analytics.track('sign_up_completed')
         setMessage('Check your email for a confirmation link, then come back to log in.')
         setMode('login')
       }
