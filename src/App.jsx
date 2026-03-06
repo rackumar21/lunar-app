@@ -77,7 +77,7 @@ export default function LunarApp() {
   }, []);
   const [appData, setAppData] = useState(SEED);
   const [notes, setNotes] = useState(SEED_NOTES);
-  const { reports, saveReport, deleteReport } = useReports(user, showToast);
+  const { reports, saveReport, deleteReport, reorderReports } = useReports(user, showToast);
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [logDate, setLogDate] = useState(null);
   const [selectedReport, setSelectedReport] = useState(null);
@@ -203,7 +203,7 @@ export default function LunarApp() {
                   hormoneReports: reports,
                   memories,
                 }} />}
-                {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} />}
+                {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} onReorder={reorderReports} />}
               </div>
               {!(keyboardOpen && tab === "ask") && <TabBar active={tab} onChange={handleTabChange} />}
             </>
