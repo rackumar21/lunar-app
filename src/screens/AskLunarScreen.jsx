@@ -21,6 +21,14 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboa
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isTyping]);
 
+  // When keyboard opens/closes, the header shows/hides which resizes the scroll area.
+  // Re-scroll to bottom so the latest message stays visible.
+  useEffect(() => {
+    setTimeout(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }, 80);
+  }, [keyboardOpen]);
+
   // When keyboard opens: iOS Chrome scrolls the page up (even with position:fixed).
   // Reset page scroll to 0 immediately, then scroll messages to the latest.
   useEffect(() => {

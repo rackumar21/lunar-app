@@ -135,4 +135,4 @@ export const TABS = [
 ];
 
 // ─── Records ──────────────────────────────────────────────────────────
-export const RECORD_CATEGORIES = ["Hormone Panel", "Full Blood Count", "Thyroid", "Iron Panel", "Vitamins & Minerals", "Other"];
+export const RECORD_CATEGORIES = ["Hormone Panel", "Thyroid", "Vitamins & Minerals", "General Health", "Other"];

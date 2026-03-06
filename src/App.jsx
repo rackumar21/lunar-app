@@ -6,6 +6,7 @@ import { analytics } from "./lib/analytics";
 import { useAuth } from "./hooks/useAuth";
 import { useLogs } from "./hooks/useLogs";
 import { usePeriodDays } from "./hooks/usePeriodDays";
+import { useReports } from "./hooks/useReports";
 import Styles from "./components/Styles";
 import TabBar from "./components/TabBar";
 import Toast from "./components/Toast";
@@ -76,7 +77,7 @@ export default function LunarApp() {
   }, []);
   const [appData, setAppData] = useState(SEED);
   const [notes, setNotes] = useState(SEED_NOTES);
-  const [reports] = useState(HORMONE_REPORTS);
+  const { reports, saveReport, deleteReport } = useReports(user, showToast);
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [logDate, setLogDate] = useState(null);
   const [selectedReport, setSelectedReport] = useState(null);
@@ -213,9 +214,9 @@ export default function LunarApp() {
       {user && (
         <>
           <LogModal isOpen={isLogOpen} onClose={() => { setIsLogOpen(false); setLogDate(null); }} isOnPeriod={cycleData.isOnPeriod} existingLog={logs[logDate || todayKey()]} onSave={handleSaveLog} dateLabel={dayLabel} />
-          <RecordDetailModal report={selectedReport} onClose={() => setSelectedReport(null)} />
+          <RecordDetailModal report={selectedReport} onClose={() => setSelectedReport(null)} allReports={reports} onDelete={(id) => { deleteReport(id); setSelectedReport(null); }} />
           <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} data={displayData} onUpdateSettings={(s) => setAppData((p) => ({ ...p, ...s }))} onSignOut={signOut} />
-          <UploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSave={(r) => console.log("New report:", r)} />
+          <UploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSave={saveReport} />
         </>
       )}
 
