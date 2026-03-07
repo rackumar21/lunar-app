@@ -3,7 +3,19 @@ import { C, F, MOODS, PAIN_STEPS } from "../lib/constants";
 import { fmtDay } from "../lib/helpers";
 import CycleHistoryModal from "../components/CycleHistoryModal";
 
-const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatchAddPeriodDays, onOpenLog, onAddPeriodDay, onRemovePeriodDay }) => {
+// Generate every date between start and end (inclusive) as YYYY-MM-DD strings
+function datesInRange(start, end) {
+  const dates = [];
+  const d = new Date(start + "T12:00:00");
+  const e = new Date(end + "T12:00:00");
+  while (d <= e) {
+    dates.push(d.toISOString().slice(0, 10));
+    d.setDate(d.getDate() + 1);
+  }
+  return dates;
+}
+
+const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatchAddPeriodDays, onBatchRemovePeriodDays, onOpenLog, onAddPeriodDay, onRemovePeriodDay }) => {
   const TODAY = new Date();
   const DAYS_BACK = 300, DAYS_FORWARD = 90;
   const days = [];
@@ -18,6 +30,7 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
   const [selectedKey, setSelectedKey] = useState(todayKey);
   const [headerKey, setHeaderKey] = useState(todayKey);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [editingCycle, setEditingCycle] = useState(null); // { startDate, endDate, originalStart, originalEnd }
 
   useEffect(() => {
     if (stripRef.current) {
@@ -124,7 +137,7 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px 20px" }}>
         <div style={{ marginBottom: 14 }}>
           <p style={{ fontFamily: F.heading, fontSize: 18, fontWeight: 400, color: C.text, marginBottom: 8 }}>{fmtDay(selectedKey)}</p>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
             {isToday && <span style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, color: C.primary, background: C.primaryMuted, padding: "2px 8px", borderRadius: 20, display: "inline-block" }}>Today</span>}
             <button className="press" onClick={() => onOpenLog(selectedKey)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${selectedLog ? C.primaryLight : C.border}`, background: selectedLog ? C.primaryMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: selectedLog ? C.primary : C.textSec }}>
               {selectedLog ? "✓ Edit log" : "+ Log symptoms"}
@@ -183,19 +196,70 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
           <div style={{ marginTop: 8 }}>
             <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 10 }}>Cycle history</p>
             <div style={{ background: C.white, borderRadius: 16, border: `1px solid ${C.border}`, overflow: "hidden" }}>
-              {cycleHistory.map((cycle, i) => (
-                <div key={cycle.label} style={{ padding: "13px 16px", borderBottom: i < cycleHistory.length - 1 ? `1px solid ${C.border}` : "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-                      <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec }}>{cycle.label}</p>
+              {cycleHistory.map((cycle, i) => {
+                const isEditing = editingCycle?.originalStart === cycle.startDate;
+                return (
+                  <div key={cycle.startDate || cycle.label} style={{ borderBottom: i < cycleHistory.length - 1 ? `1px solid ${C.border}` : "none" }}>
+                    <div style={{ padding: "13px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div>
+                        <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec, marginBottom: 3 }}>{cycle.label}</p>
+                        <div style={{ display: "flex", gap: 12 }}>
+                          {cycle.cycleLength && <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Cycle <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.cycleLength}d</span></p>}
+                          {cycle.periodLength && <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Period <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.periodLength}d</span></p>}
+                        </div>
+                      </div>
+                      <button
+                        className="press"
+                        onClick={() => isEditing
+                          ? setEditingCycle(null)
+                          : setEditingCycle({ startDate: cycle.startDate, endDate: cycle.endDate, originalStart: cycle.startDate, originalEnd: cycle.endDate })
+                        }
+                        style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${isEditing ? C.border : C.primaryLight}`, background: isEditing ? C.white : C.primaryMuted, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: isEditing ? C.textSec : C.primary, flexShrink: 0 }}
+                      >
+                        {isEditing ? "Cancel" : "Edit"}
+                      </button>
                     </div>
-                    <div style={{ display: "flex", gap: 12 }}>
-                      {cycle.cycleLength && <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Cycle <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.cycleLength}d</span></p>}
-                      {cycle.periodLength && <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Period <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.periodLength}d</span></p>}
-                    </div>
+
+                    {isEditing && (
+                      <div style={{ padding: "0 16px 14px", background: C.bg, borderTop: `1px solid ${C.border}` }}>
+                        <div style={{ display: "flex", gap: 10, marginTop: 12, marginBottom: 12 }}>
+                          <div style={{ flex: 1 }}>
+                            <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: C.textMuted, marginBottom: 6 }}>Start</p>
+                            <input
+                              type="date"
+                              value={editingCycle.startDate}
+                              onChange={(e) => setEditingCycle(prev => ({ ...prev, startDate: e.target.value }))}
+                              style={{ width: "100%", padding: "9px 12px", borderRadius: 10, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box" }}
+                            />
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: C.textMuted, marginBottom: 6 }}>End</p>
+                            <input
+                              type="date"
+                              value={editingCycle.endDate}
+                              onChange={(e) => setEditingCycle(prev => ({ ...prev, endDate: e.target.value }))}
+                              style={{ width: "100%", padding: "9px 12px", borderRadius: 10, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box" }}
+                            />
+                          </div>
+                        </div>
+                        <button
+                          className="press"
+                          onClick={async () => {
+                            const oldDates = datesInRange(editingCycle.originalStart, editingCycle.originalEnd);
+                            const newDates = datesInRange(editingCycle.startDate, editingCycle.endDate);
+                            await onBatchRemovePeriodDays(oldDates);
+                            await onBatchAddPeriodDays(newDates);
+                            setEditingCycle(null);
+                          }}
+                          style={{ width: "100%", padding: "11px", borderRadius: 10, background: `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontFamily: F.body, fontSize: 13, fontWeight: 600, color: C.white }}
+                        >
+                          Save changes
+                        </button>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

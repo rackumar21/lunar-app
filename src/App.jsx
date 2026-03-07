@@ -133,7 +133,7 @@ export default function LunarApp() {
 
   // Pass user to hooks so they scope data to the logged-in user
   const { logs, saveLog } = useLogs(user, showToast);
-  const { periodDays, addPeriodDay, removePeriodDay, batchAddPeriodDays } = usePeriodDays(user, showToast);
+  const { periodDays, addPeriodDay, removePeriodDay, batchAddPeriodDays, batchRemovePeriodDays } = usePeriodDays(user, showToast);
 
   // Derive cycle state from real period data
   const cycleData = useMemo(() => computeCycleData(periodDays), [periodDays]);
@@ -186,7 +186,7 @@ export default function LunarApp() {
             <>
               <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                 {tab === "home" && <HomeScreen data={displayData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onOpenSettings={() => setIsSettingsOpen(true)} userName={user.user_metadata?.full_name || user.email.split('@')[0]} onBatchAddPeriodDays={batchAddPeriodDays} onRemovePeriodDay={removePeriodDay} />}
-                {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} onOpenLog={(date) => { setLogDate(date); setIsLogOpen(true); }} onAddPeriodDay={addPeriodDay} onRemovePeriodDay={removePeriodDay} />}
+                {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} onBatchRemovePeriodDays={batchRemovePeriodDays} onOpenLog={(date) => { setLogDate(date); setIsLogOpen(true); }} onAddPeriodDay={addPeriodDay} onRemovePeriodDay={removePeriodDay} />}
                 {tab === "ask" && <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} keyboardOpen={keyboardOpen} onSaveMemories={saveMemories} context={{
                   userName: user.user_metadata?.full_name || user.email.split('@')[0],
                   today: todayKey(),

@@ -68,5 +68,19 @@ export function usePeriodDays(user, onError) {
     }
   }
 
-  return { periodDays, loading, addPeriodDay, removePeriodDay, batchAddPeriodDays }
+  const batchRemovePeriodDays = async (dates) => {
+    setPeriodDays(prev => prev.filter(d => !dates.includes(d)))
+    const { error } = await supabase
+      .from('period_days')
+      .delete()
+      .eq('user_id', user.id)
+      .in('date', dates)
+    if (error) {
+      logger.error('Failed to batch remove period days', { userId: user.id, error: error.message })
+      onError?.("Couldn't save. Check your connection.")
+      fetchPeriodDays()
+    }
+  }
+
+  return { periodDays, loading, addPeriodDay, removePeriodDay, batchAddPeriodDays, batchRemovePeriodDays }
 }

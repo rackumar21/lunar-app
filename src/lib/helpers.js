@@ -98,6 +98,8 @@ export const computeCycleData = (periodDays) => {
       label: periodLabel,
       cycleLength,
       periodLength: periodLength || null,
+      startDate: starts[i - 1],
+      endDate: periodEndDate.toISOString().slice(0, 10),
     });
   }
 
@@ -120,6 +122,8 @@ export const computeCycleData = (periodDays) => {
     cycleLength: null, // cycle not complete yet
     periodLength: currentPeriodLength || null,
     current: true,
+    startDate: lastStart,
+    endDate: currentPeriodEnd.toISOString().slice(0, 10),
   });
 
   return { isOnPeriod, cycleDay, daysUntilNextPeriod, nextPeriodDate, predictedCycleLength, predictedDays, cycleHistory };
