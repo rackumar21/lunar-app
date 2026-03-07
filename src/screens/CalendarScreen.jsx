@@ -138,10 +138,10 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
         <div style={{ marginBottom: 14 }}>
           <p style={{ fontFamily: F.heading, fontSize: 18, fontWeight: 400, color: C.text, marginBottom: 8 }}>{fmtDay(selectedKey)}</p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-            <button className="press" onClick={() => onOpenLog(selectedKey)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${selectedLog ? C.primaryLight : C.border}`, background: selectedLog ? C.primaryMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: selectedLog ? C.primary : C.textSec }}>
+            <button className="press" onClick={() => onOpenLog(selectedKey)} style={{ padding: "6px 14px", borderRadius: 20, border: `1.5px solid ${selectedLog ? C.primaryLight : C.border}`, background: selectedLog ? C.primaryMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: selectedLog ? C.primary : C.textSec, lineHeight: 1.4 }}>
               {selectedLog ? "✓ Edit log" : "+ Log symptoms"}
             </button>
-            <button className="press" onClick={() => isPeriodDay ? onRemovePeriodDay(selectedKey) : onAddPeriodDay(selectedKey)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${isPeriodDay ? C.rose : C.border}`, background: isPeriodDay ? C.roseMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: isPeriodDay ? C.rose : C.textSec }}>
+            <button className="press" onClick={() => isPeriodDay ? onRemovePeriodDay(selectedKey) : onAddPeriodDay(selectedKey)} style={{ padding: "6px 14px", borderRadius: 20, border: `1.5px solid ${isPeriodDay ? C.rose : C.border}`, background: isPeriodDay ? C.roseMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: isPeriodDay ? C.rose : C.textSec, lineHeight: 1.4 }}>
               {isPeriodDay ? "🩸 Period day" : "Mark period"}
             </button>
           </div>
