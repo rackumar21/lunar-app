@@ -8,18 +8,18 @@ import PainSelector from "./shared/PainSelector";
 const LogModal = ({ isOpen, onClose, isOnPeriod, existingLog, onSave, dateLabel }) => {
   const [mood, setMood] = useState(existingLog?.mood || null);
   const [pain, setPain] = useState(existingLog?.pain ?? 0);
-  const [flow, setFlow] = useState(existingLog?.flow || "Medium");
+  const [flow, setFlow] = useState(existingLog?.flow || null);
   const [symptoms, setSymptoms] = useState(existingLog?.symptoms || []);
   const [note, setNote] = useState(existingLog?.note || "");
   const [weight, setWeight] = useState(existingLog?.weight || "");
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    if (existingLog) { setMood(existingLog.mood || null); setPain(existingLog.pain ?? 0); setFlow(existingLog.flow || "Medium"); setSymptoms(existingLog.symptoms || []); setNote(existingLog.note || ""); setWeight(existingLog.weight || ""); }
+    if (existingLog) { setMood(existingLog.mood || null); setPain(existingLog.pain ?? 0); setFlow(existingLog.flow || null); setSymptoms(existingLog.symptoms || []); setNote(existingLog.note || ""); setWeight(existingLog.weight || ""); }
   }, [existingLog]);
 
   const toggle = (s) => setSymptoms((p) => p.includes(s) ? p.filter((x) => x !== s) : [...p, s]);
-  const handleSave = () => { setSaved(true); setTimeout(() => { onSave({ mood, pain, flow, symptoms, note, weight: weight ? parseFloat(weight) : null }); onClose(); setSaved(false); }, 500); };
+  const handleSave = () => { setSaved(true); setTimeout(() => { onSave({ mood, pain, flow: isOnPeriod ? flow : null, symptoms, note, weight: weight ? parseFloat(weight) : null }); onClose(); setSaved(false); }, 500); };
 
   if (!isOpen) return null;
   return (
