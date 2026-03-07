@@ -3,11 +3,9 @@ import { C, F } from "../lib/constants";
 import Label from "./shared/Label";
 import Handle from "./shared/Handle";
 import CloseBtn from "./shared/CloseBtn";
-import ComingSoon from "./shared/ComingSoon";
 
 const SettingsModal = ({ isOpen, onClose, data, onUpdateSettings, onSignOut }) => {
   const [periodLen, setPeriodLen] = useState(data.defaultPeriodLength);
-  const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
 
   if (!isOpen) return null;
@@ -37,34 +35,9 @@ const SettingsModal = ({ isOpen, onClose, data, onUpdateSettings, onSignOut }) =
           <button className="press" onClick={() => { onUpdateSettings({ defaultPeriodLength: periodLen }); setSaved(true); setTimeout(() => setSaved(false), 1500); }} style={{ width: "100%", padding: "13px", borderRadius: 12, marginBottom: 22, background: saved ? C.success : `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontSize: 13, fontWeight: 600, color: C.white, transition: "background 0.3s" }}>
             {saved ? "✓ Saved" : "Save settings"}
           </button>
-          <Label mb={10}>Share link</Label>
-          <div style={{ background: C.bg, borderRadius: 14, padding: "14px 16px", border: `1px solid ${C.border}`, marginBottom: 22 }}>
-            <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec, lineHeight: 1.6, marginBottom: 10 }}>Share with someone you trust. They see your phase and days until next period — nothing else.</p>
-            <div style={{ background: C.white, borderRadius: 10, padding: "9px 12px", fontFamily: F.body, fontSize: 11, color: C.accent, wordBreak: "break-all", marginBottom: 10, border: `1px solid ${C.border}` }}>lunar.app/share/{data.shareToken}</div>
-            <button className="press" onClick={() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ width: "100%", padding: "10px", borderRadius: 10, background: copied ? C.success : C.primaryMuted, fontSize: 12, fontWeight: 600, color: copied ? C.white : C.primary }}>
-              {copied ? "✓ Copied!" : "Copy link"}
-            </button>
-          </div>
           <button className="press" onClick={onSignOut} style={{ width: "100%", padding: "13px", borderRadius: 12, marginBottom: 22, background: C.border, fontSize: 13, fontWeight: 600, color: C.textSec }}>
             Log out
           </button>
-          <Label mb={10}>Coming in V2</Label>
-          {[
-            { icon: "⌚", title: "Wearable Sync", desc: "Apple Health, Garmin — sleep, HRV, steps alongside your cycle." },
-            { icon: "🔔", title: "Reminders", desc: "Gentle nudges to log, and heads-up before your period arrives." },
-            { icon: "📊", title: "Pattern Insights", desc: "After 3 months, Lunar automatically surfaces your symptom patterns." },
-          ].map((item) => (
-            <div key={item.title} style={{ background: C.comingSoonMuted, borderRadius: 12, padding: "12px 14px", border: `1px dashed ${C.comingSoon}44`, marginBottom: 8, display: "flex", gap: 10 }}>
-              <span style={{ fontSize: 18, flexShrink: 0 }}>{item.icon}</span>
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                  <p style={{ fontFamily: F.body, fontSize: 12, fontWeight: 600, color: C.comingSoon }}>{item.title}</p>
-                  <ComingSoon />
-                </div>
-                <p style={{ fontFamily: F.body, fontSize: 11, color: C.comingSoon, opacity: 0.8, lineHeight: 1.5 }}>{item.desc}</p>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>

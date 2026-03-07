@@ -2,7 +2,6 @@ import { useState } from "react";
 import { C, F, PHASES, getPhaseForDay } from "../lib/constants";
 import CycleWheel from "../components/CycleWheel";
 import Label from "../components/shared/Label";
-import ComingSoon from "../components/shared/ComingSoon";
 import PeriodLogModal from "../components/PeriodLogModal";
 
 const greeting = () => {
@@ -82,17 +81,6 @@ const HomeScreen = ({ data, onOpenLog, onOpenSettings, userName, onBatchAddPerio
             <p style={{ fontFamily: F.heading, fontSize: 30, color: C.primary, lineHeight: 1 }}>{data.daysUntilNextPeriod ?? "—"}</p>
             <p style={{ fontFamily: F.body, fontSize: 10, color: C.textMuted }}>days away</p>
           </div>
-        </div>
-
-<div style={{ background: C.comingSoonMuted, borderRadius: 14, padding: "13px 15px", border: `1px dashed ${C.comingSoon}44`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-              <p style={{ fontFamily: F.body, fontSize: 12, fontWeight: 600, color: C.comingSoon }}>Cycle Insights</p>
-              <ComingSoon />
-            </div>
-            <p style={{ fontFamily: F.body, fontSize: 11, color: C.comingSoon, opacity: 0.8, lineHeight: 1.5 }}>AI detects patterns across your cycles — "Headaches on Day 16–18 in 4 of 5 cycles."</p>
-          </div>
-          <span style={{ fontSize: 20, marginLeft: 10 }}>🔍</span>
         </div>
       </div>
     </div>
