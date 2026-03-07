@@ -169,12 +169,20 @@ src/
 - ✅ Trend notes — RecordDetailModal shows change vs previous report
 - ✅ Delete report — inline confirmation (no browser popup)
 - ✅ Inline delete confirmation — replaced window.confirm() with in-modal UI
+- ✅ Drag-to-reorder reports — @dnd-kit, custom order saved to localStorage
+- ✅ Report sort order fixed — newest date always first
+- ✅ AI memories moved to Supabase — persist across devices, not just localStorage
+- ✅ Supabase email redirect fixed — Site URL updated to production URL
+- ✅ Cycle history edit — inline date pickers to correct period start/end dates
+- ✅ Removed all v2 placeholder UI — Cycle Insights, Share link, Coming in V2 blocks
+- ✅ Flow bug fixed — was silently saving "Medium" on every log, now defaults to null
+- ✅ Calendar pill alignment fixed — consistent padding, border, lineHeight on buttons
 
-**Milestone:** ✅ App handles failures gracefully. GitHub shows green checks. Events flow to Posthog. Lab reports upload, extract, and save end-to-end.
+**Milestone:** ✅ App handles failures gracefully. GitHub shows green checks. Events flow to Posthog. Lab reports upload, extract, and save end-to-end. App is clean — no placeholder UI, no silent data bugs.
 
 ---
 
-## CHAPTER 6 — Portfolio ⬜
+## CHAPTER 6 — Portfolio 🔄
 
 **Goal:** Turn this project into a career asset.
 
@@ -183,6 +191,13 @@ src/
 - Interview talking points: how to explain each architectural decision
 - GitHub profile: clean repo, good README, commit history that tells a story
 - Personal narrative: "I'm a PM who can build" — backed by evidence
+
+**Progress:**
+- ✅ Portfolio repo created (rachita-portfolio, private) at ~/Work/rachita-portfolio
+- ✅ TruthSeek repos cloned locally at ~/Work/truthseek for case study work
+- ⬜ Lunar case study written
+- ⬜ Cross-project interview narrative
+- ⬜ Personal website built and deployed
 
 ---
 
