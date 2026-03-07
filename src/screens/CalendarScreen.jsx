@@ -138,7 +138,6 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
         <div style={{ marginBottom: 14 }}>
           <p style={{ fontFamily: F.heading, fontSize: 18, fontWeight: 400, color: C.text, marginBottom: 8 }}>{fmtDay(selectedKey)}</p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-            {isToday && <span style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, color: C.primary, background: C.primaryMuted, padding: "2px 8px", borderRadius: 20, display: "inline-block" }}>Today</span>}
             <button className="press" onClick={() => onOpenLog(selectedKey)} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${selectedLog ? C.primaryLight : C.border}`, background: selectedLog ? C.primaryMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: selectedLog ? C.primary : C.textSec }}>
               {selectedLog ? "✓ Edit log" : "+ Log symptoms"}
             </button>
@@ -160,12 +159,6 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
               <div style={{ background: C.white, borderRadius: 12, padding: "12px 14px", border: `1px solid ${C.border}` }}>
                 <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: C.textMuted, marginBottom: 4 }}>Pain</p>
                 <p style={{ fontFamily: F.body, fontSize: 13, color: C.text }}>{PAIN_STEPS[selectedLog.pain]?.emoji} {PAIN_STEPS[selectedLog.pain]?.label}</p>
-              </div>
-            )}
-            {selectedLog.flow && (
-              <div style={{ background: C.white, borderRadius: 12, padding: "12px 14px", border: `1px solid ${C.border}` }}>
-                <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: C.textMuted, marginBottom: 4 }}>Flow</p>
-                <p style={{ fontFamily: F.body, fontSize: 13, color: C.text }}>🩸 {selectedLog.flow}</p>
               </div>
             )}
             {selectedLog.symptoms?.length > 0 && (
