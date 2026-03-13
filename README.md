@@ -75,8 +75,6 @@ npm run dev
 
 ## What I learned
 
-- **Speccing a feature and building it are not the same thing.** I've written dozens of PRDs for engineers. Building Lunar was the first time I had to make every tradeoff myself — scope, sequencing, what to cut. It changed how I write requirements.
-- **What goes into the context window is a product decision.** Getting the AI to reason over a user's actual cycle data — not give generic health advice — required deciding exactly what to include, how to structure it, and what to leave out. That's not an engineering call. It's a product call.
-- **Mobile UX has a completely different set of failure modes.** Touch targets, iOS Safari keyboard behaviour, PWA installation flows — none of this shows up when you're testing on desktop. I logged and fixed issues I would never have caught without using the app as an actual user on my phone every day.
-- **When AI output is wrong, the diagnosis matters more than the fix.** Is it a prompt problem, a context problem, or a model limitation? They look similar from the outside but require completely different responses. Building Lunar made me much faster at telling them apart.
 - **Building for yourself is both an advantage and a blind spot.** You know exactly what you need, which makes early decisions fast. But you also have to consciously check whether the product makes sense to someone who isn't you — different cycle patterns, different health concerns, different comfort level asking an AI personal questions.
+- **When AI output is wrong, the diagnosis matters more than the fix.** Is it a prompt problem, a context problem, or a model limitation? They look similar from the outside but require completely different responses. Building Lunar made me much faster at telling them apart.
+- **Mobile UX has a completely different set of failure modes.** Touch targets, iOS Safari keyboard behaviour, PWA installation flows — none of this shows up when you're testing on desktop. You only catch them by using the app as an actual user on your phone every day.
