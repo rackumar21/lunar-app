@@ -183,10 +183,22 @@ export default function LunarApp() {
 
   const screens = user ? (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      {tab === "home" && <HomeScreen data={displayData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onOpenSettings={() => setIsSettingsOpen(true)} userName={userName} onBatchAddPeriodDays={batchAddPeriodDays} onRemovePeriodDay={removePeriodDay} />}
-      {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} onBatchRemovePeriodDays={batchRemovePeriodDays} onOpenLog={(date) => { setLogDate(date); setIsLogOpen(true); }} onAddPeriodDay={addPeriodDay} onRemovePeriodDay={removePeriodDay} />}
-      {tab === "ask" && <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} keyboardOpen={keyboardOpen} onSaveMemories={addMemories} context={askContext} />}
-      {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} onReorder={reorderReports} />}
+      {tab === "home" && <HomeScreen data={displayData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onOpenSettings={() => setIsSettingsOpen(true)} userName={userName} onBatchAddPeriodDays={batchAddPeriodDays} onRemovePeriodDay={removePeriodDay} isDesktop={isDesktop} />}
+      {tab === "calendar" && (
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", maxWidth: isDesktop ? 900 : "none", margin: isDesktop ? "0 auto" : 0, width: "100%" }}>
+            <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} onBatchRemovePeriodDays={batchRemovePeriodDays} onOpenLog={(date) => { setLogDate(date); setIsLogOpen(true); }} onAddPeriodDay={addPeriodDay} onRemovePeriodDay={removePeriodDay} />
+          </div>
+        </div>
+      )}
+      {tab === "ask" && (
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", maxWidth: isDesktop ? 780 : "none", margin: isDesktop ? "0 auto" : 0, width: "100%" }}>
+            <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} keyboardOpen={keyboardOpen} onSaveMemories={addMemories} context={askContext} />
+          </div>
+        </div>
+      )}
+      {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} onReorder={reorderReports} isDesktop={isDesktop} />}
     </div>
   ) : null;
   // ──────────────────────────────────────────────────────────────────────────

@@ -1,10 +1,12 @@
 import { C, F, PHASES, getPhaseForDay } from "../lib/constants";
 
-const CycleWheel = ({ cycleDay, totalDays = 28 }) => {
-  const size = 200;
+const CycleWheel = ({ cycleDay, totalDays = 28, isOnPeriod = false, size = 200 }) => {
   const cx = size / 2, cy = size / 2;
-  const outerR = 88, innerR = 58;
-  const phase = cycleDay ? getPhaseForDay(cycleDay) : null;
+  const outerR = size * 0.44;
+  const innerR = size * 0.29;
+
+  // If actively bleeding, always show Menstrual — even if cycle day math says otherwise
+  const phase = isOnPeriod ? PHASES[0] : (cycleDay ? getPhaseForDay(cycleDay) : null);
 
   const arc = (startDeg, endDeg, r1, r2) => {
     const toRad = (d) => ((d - 90) * Math.PI) / 180;
@@ -23,6 +25,11 @@ const CycleWheel = ({ cycleDay, totalDays = 28 }) => {
   const dotR = (outerR + innerR) / 2;
   const dotX = cx + dotR * Math.cos(todayRad);
   const dotY = cy + dotR * Math.sin(todayRad);
+  const dotOuter = Math.max(7, size * 0.045);
+  const dotInner = Math.max(4, size * 0.025);
+
+  const dayFontSize = Math.round(size * 0.15);
+  const phaseFontSize = Math.round(size * 0.056);
 
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
@@ -34,13 +41,13 @@ const CycleWheel = ({ cycleDay, totalDays = 28 }) => {
           p.name === phase.name &&
           <path key={p.name + "-active"} d={arc(p.startDeg, p.endDeg, innerR, outerR)} fill={p.color} opacity={0.55} />
         ))}
-        <circle cx={dotX} cy={dotY} r={9} fill={C.white} stroke={phase ? phase.color : C.textMuted} strokeWidth={2.5} />
-        <circle cx={dotX} cy={dotY} r={5} fill={phase ? phase.color : C.textMuted} />
+        <circle cx={dotX} cy={dotY} r={dotOuter} fill={C.white} stroke={phase ? phase.color : C.textMuted} strokeWidth={2.5} />
+        <circle cx={dotX} cy={dotY} r={dotInner} fill={phase ? phase.color : C.textMuted} />
       </svg>
       <div style={{ position: "absolute", textAlign: "center", pointerEvents: "none" }}>
-        <p style={{ fontFamily: F.heading, fontSize: 30, fontWeight: 400, color: C.text, lineHeight: 1 }}>{cycleDay ?? "—"}</p>
+        <p style={{ fontFamily: F.heading, fontSize: dayFontSize, fontWeight: 400, color: C.text, lineHeight: 1 }}>{cycleDay ?? "—"}</p>
         <p style={{ fontFamily: F.body, fontSize: 9, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: C.textMuted, marginTop: 2 }}>Day</p>
-        <p style={{ fontFamily: F.body, fontSize: 11, color: phase ? phase.color : C.textMuted, fontWeight: 600, marginTop: 4 }}>
+        <p style={{ fontFamily: F.body, fontSize: phaseFontSize, color: phase ? phase.color : C.textMuted, fontWeight: 600, marginTop: 4 }}>
           {phase ? `${phase.emoji} ${phase.name}` : "Log your period to start"}
         </p>
       </div>

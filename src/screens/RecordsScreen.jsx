@@ -79,7 +79,7 @@ function SortableReportCard({ report, onViewReport }) {
   )
 }
 
-const RecordsScreen = ({ reports, onViewReport, onAddReport, onReorder }) => {
+const RecordsScreen = ({ reports, onViewReport, onAddReport, onReorder, isDesktop }) => {
   const sensors = useSensors(
     useSensor(TouchSensor),
     useSensor(PointerSensor),
@@ -94,33 +94,39 @@ const RecordsScreen = ({ reports, onViewReport, onAddReport, onReorder }) => {
     }
   }
 
+  const padding = isDesktop ? "36px 48px 0" : "18px 20px 0";
+  const cardPadding = isDesktop ? "12px 48px 0" : "12px 20px 0";
+
   return (
     <div style={{ flex: 1, overflowY: "auto", paddingBottom: 16 }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "18px 20px 0" }}>
-        <div>
-          <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>Health</p>
-          <h2 style={{ fontFamily: F.heading, fontSize: 26, fontWeight: 400, color: C.text, marginBottom: 3 }}>Records</h2>
-          <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec }}>Your personal health paper trail</p>
-        </div>
-        <button className="press" onClick={onAddReport} style={{ marginTop: 6, padding: "9px 14px", borderRadius: 12, background: `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontSize: 12, fontWeight: 600, color: C.white }}>+ Add</button>
-      </div>
-
-      <div style={{ padding: "12px 20px 0", display: "flex", flexDirection: "column", gap: 10 }}>
-        {reports.length === 0 && (
-          <div style={{ textAlign: "center", padding: "40px 20px", color: C.textMuted, fontFamily: F.body, fontSize: 13 }}>
-            No records yet — tap + Add to upload your first report.
+      <div style={{ maxWidth: isDesktop ? 960 : "none", margin: isDesktop ? "0 auto" : 0 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding }}>
+          <div>
+            <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>Health</p>
+            <h2 style={{ fontFamily: F.heading, fontSize: isDesktop ? 32 : 26, fontWeight: 400, color: C.text, marginBottom: 3 }}>Records</h2>
+            <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec }}>Your personal health paper trail</p>
           </div>
-        )}
+          <button className="press" onClick={onAddReport} style={{ marginTop: 6, padding: "9px 14px", borderRadius: 12, background: `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontSize: 12, fontWeight: 600, color: C.white }}>+ Add</button>
+        </div>
 
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={reports.map(r => r.id)} strategy={verticalListSortingStrategy}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {reports.map(r => (
-                <SortableReportCard key={r.id} report={r} onViewReport={onViewReport} />
-              ))}
+        <div style={{ padding: cardPadding }}>
+          {reports.length === 0 && (
+            <div style={{ textAlign: "center", padding: "40px 20px", color: C.textMuted, fontFamily: F.body, fontSize: 13 }}>
+              No records yet — click + Add to upload your first report.
             </div>
-          </SortableContext>
-        </DndContext>
+          )}
+
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={reports.map(r => r.id)} strategy={verticalListSortingStrategy}>
+              {/* Desktop: 2-column grid. Mobile: single column. */}
+              <div style={{ display: "grid", gridTemplateColumns: isDesktop ? "1fr 1fr" : "1fr", gap: 12 }}>
+                {reports.map(r => (
+                  <SortableReportCard key={r.id} report={r} onViewReport={onViewReport} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
       </div>
     </div>
   )
