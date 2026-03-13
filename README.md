@@ -70,3 +70,13 @@ ANTHROPIC_API_KEY=
 ```bash
 npm run dev
 ```
+
+---
+
+## What I learned
+
+- **Shipping incrementally is harder than it sounds.** Each chapter of this build had a working product at the end — not a broken WIP. That constraint forced cleaner decisions: scope down, ship, then add.
+- **Database design decisions are permanent.** Choosing Supabase with Postgres row-level security early meant I never had to retrofit auth or data isolation. Picking the right primitive matters more than moving fast.
+- **LLM context is a product decision, not a technical one.** What you put in the context window determines what the AI can and can't do. Getting Claude to reason over a user's actual cycle data — not generic health advice — required deliberate choices about what to include and how to structure it.
+- **The gap between "works on my machine" and "works on a phone" is enormous.** PWA, touch targets, iOS Safari quirks, keyboard pushing content — mobile UX is a different discipline. I shipped fixes I never would have filed a ticket for.
+- **Evaluating AI output is a skill.** When the AI gave a wrong answer, the question was always: was it a prompt problem, a context problem, or a model limitation? Learning to distinguish those three made me a better AI PM.
