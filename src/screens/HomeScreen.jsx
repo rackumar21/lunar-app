@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { C, F, PHASES, getPhaseForDay } from "../lib/constants";
+
 import CycleWheel from "../components/CycleWheel";
 import Label from "../components/shared/Label";
 import PeriodLogModal from "../components/PeriodLogModal";
@@ -12,7 +13,9 @@ const greeting = () => {
 };
 
 const HomeScreen = ({ data, onOpenLog, onOpenSettings, userName, onBatchAddPeriodDays, onRemovePeriodDay }) => {
-  const phase = data.cycleDay ? getPhaseForDay(data.cycleDay) : null;
+  // If actively on period, always show Menstrual phase regardless of cycle day number.
+  // (Day 6 would otherwise flip to Follicular even while still bleeding.)
+  const phase = data.isOnPeriod ? PHASES[0] : (data.cycleDay ? getPhaseForDay(data.cycleDay) : null);
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
 
   const handleEndToday = () => {

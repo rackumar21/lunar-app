@@ -10,6 +10,7 @@ import { useReports } from "./hooks/useReports";
 import { useMemories } from "./hooks/useMemories";
 import Styles from "./components/Styles";
 import TabBar from "./components/TabBar";
+import Sidebar from "./components/Sidebar";
 import Toast from "./components/Toast";
 import LogModal from "./components/LogModal";
 import RecordDetailModal from "./components/RecordDetailModal";
@@ -59,21 +60,25 @@ export default function LunarApp() {
 
   const [tab, setTab] = useState("home");
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 768);
 
   // Detect keyboard open: compare visual viewport against the initial window height.
   // window.innerHeight stays constant on iOS when keyboard opens; visualViewport shrinks.
   // We also listen to window.resize as a fallback for browsers where visualViewport events are unreliable.
   useEffect(() => {
     const INITIAL_HEIGHT = window.innerHeight;
-    const check = () => {
+    const checkKeyboard = () => {
       const vvh = window.visualViewport?.height ?? window.innerHeight;
       setKeyboardOpen(INITIAL_HEIGHT - vvh > 150);
     };
-    window.visualViewport?.addEventListener('resize', check);
-    window.addEventListener('resize', check);
+    const checkWidth = () => setIsDesktop(window.innerWidth >= 768);
+    window.visualViewport?.addEventListener('resize', checkKeyboard);
+    window.addEventListener('resize', checkKeyboard);
+    window.addEventListener('resize', checkWidth);
     return () => {
-      window.visualViewport?.removeEventListener('resize', check);
-      window.removeEventListener('resize', check);
+      window.visualViewport?.removeEventListener('resize', checkKeyboard);
+      window.removeEventListener('resize', checkKeyboard);
+      window.removeEventListener('resize', checkWidth);
     };
   }, []);
   const [appData, setAppData] = useState(SEED);
@@ -157,44 +162,82 @@ export default function LunarApp() {
   // While checking auth state, show nothing (avoids flash of wrong screen)
   if (authLoading) return null;
 
+  // ── Shared screen content (same JSX for both mobile and desktop) ────────────
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0];
+  const askContext = {
+    userName,
+    today: todayKey(),
+    cycleDay: cycleData.cycleDay,
+    predictedCycleLength: cycleData.predictedCycleLength,
+    daysUntilNextPeriod: cycleData.daysUntilNextPeriod,
+    nextPeriodDate: cycleData.nextPeriodDate,
+    isOnPeriod: cycleData.isOnPeriod,
+    recentPeriods: cycleData.cycleHistory || [],
+    recentLogs: Object.entries(logs)
+      .filter(([date]) => date >= new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10))
+      .map(([date, log]) => ({ date, ...log }))
+      .sort((a, b) => b.date.localeCompare(a.date)),
+    hormoneReports: reports,
+    memories,
+  };
+
+  const screens = user ? (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      {tab === "home" && <HomeScreen data={displayData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onOpenSettings={() => setIsSettingsOpen(true)} userName={userName} onBatchAddPeriodDays={batchAddPeriodDays} onRemovePeriodDay={removePeriodDay} />}
+      {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} onBatchRemovePeriodDays={batchRemovePeriodDays} onOpenLog={(date) => { setLogDate(date); setIsLogOpen(true); }} onAddPeriodDay={addPeriodDay} onRemovePeriodDay={removePeriodDay} />}
+      {tab === "ask" && <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} keyboardOpen={keyboardOpen} onSaveMemories={addMemories} context={askContext} />}
+      {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} onReorder={reorderReports} />}
+    </div>
+  ) : null;
+  // ──────────────────────────────────────────────────────────────────────────
+
   return (
     <>
       <Styles />
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "var(--app-height, 100svh)", background: "#F7F3EE", display: "flex", justifyContent: "center" }}>
-        <div style={{ width: "100%", maxWidth: 430, height: "100%", background: "#F7F3EE", display: "flex", flexDirection: "column", position: "relative" }}>
-          <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 100 }} />
 
-          {/* Show auth screen if not logged in, otherwise show the app */}
-          {!user ? (
-            <AuthScreen onSignIn={signIn} onSignUp={signUp} />
-          ) : (
-            <>
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                {tab === "home" && <HomeScreen data={displayData} onOpenLog={() => { setLogDate(todayKey()); setIsLogOpen(true); }} onOpenSettings={() => setIsSettingsOpen(true)} userName={user.user_metadata?.full_name || user.email.split('@')[0]} onBatchAddPeriodDays={batchAddPeriodDays} onRemovePeriodDay={removePeriodDay} />}
-                {tab === "calendar" && <CalendarScreen logs={logs} periodDays={periodDays} predictedDays={cycleData.predictedDays || []} cycleHistory={cycleData.cycleHistory || []} onBatchAddPeriodDays={batchAddPeriodDays} onBatchRemovePeriodDays={batchRemovePeriodDays} onOpenLog={(date) => { setLogDate(date); setIsLogOpen(true); }} onAddPeriodDay={addPeriodDay} onRemovePeriodDay={removePeriodDay} />}
-                {tab === "ask" && <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} keyboardOpen={keyboardOpen} onSaveMemories={addMemories} context={{
-                  userName: user.user_metadata?.full_name || user.email.split('@')[0],
-                  today: todayKey(),
-                  cycleDay: cycleData.cycleDay,
-                  predictedCycleLength: cycleData.predictedCycleLength,
-                  daysUntilNextPeriod: cycleData.daysUntilNextPeriod,
-                  nextPeriodDate: cycleData.nextPeriodDate,
-                  isOnPeriod: cycleData.isOnPeriod,
-                  recentPeriods: cycleData.cycleHistory || [],
-                  recentLogs: Object.entries(logs)
-                    .filter(([date]) => date >= new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10))
-                    .map(([date, log]) => ({ date, ...log }))
-                    .sort((a, b) => b.date.localeCompare(a.date)),
-                  hormoneReports: reports,
-                  memories,
-                }} />}
-                {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} onReorder={reorderReports} />}
-              </div>
-              {!(keyboardOpen && tab === "ask") && <TabBar active={tab} onChange={handleTabChange} />}
-            </>
-          )}
+      {isDesktop ? (
+        // ── Desktop layout: sidebar on left, content on right ───────────────
+        <div style={{ position: "fixed", inset: 0, background: "#E8E3DC", display: "flex", justifyContent: "center" }}>
+          <div style={{ width: "100%", maxWidth: 1200, display: "flex", height: "100%" }}>
+
+            {/* Sidebar — only shown when logged in */}
+            {user && (
+              <Sidebar active={tab} onChange={handleTabChange} onOpenSettings={() => setIsSettingsOpen(true)} />
+            )}
+
+            {/* Content area */}
+            <div style={{ flex: 1, background: "#F7F3EE", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              {!user ? (
+                // Auth screen centered in content area
+                <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "stretch" }}>
+                  <div style={{ width: "100%", maxWidth: 440 }}>
+                    <AuthScreen onSignIn={signIn} onSignUp={signUp} />
+                  </div>
+                </div>
+              ) : (
+                screens
+              )}
+            </div>
+
+          </div>
         </div>
-      </div>
+      ) : (
+        // ── Mobile layout: unchanged ─────────────────────────────────────────
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "var(--app-height, 100svh)", background: "#F7F3EE", display: "flex", justifyContent: "center" }}>
+          <div style={{ width: "100%", maxWidth: 430, height: "100%", background: "#F7F3EE", display: "flex", flexDirection: "column", position: "relative" }}>
+            <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 100 }} />
+
+            {!user ? (
+              <AuthScreen onSignIn={signIn} onSignUp={signUp} />
+            ) : (
+              <>
+                {screens}
+                {!(keyboardOpen && tab === "ask") && <TabBar active={tab} onChange={handleTabChange} />}
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {user && (
         <>

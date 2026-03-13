@@ -4,6 +4,14 @@ A personal health companion for menstrual cycle tracking, symptom logging, and A
 
 **[lunar-app-beta.vercel.app](https://lunar-app-beta.vercel.app)**
 
+<p align="center">
+  <img src="docs/images/home.PNG" width="220" alt="Home — cycle wheel and phase tracking" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="docs/images/ask-lunar.PNG" width="220" alt="Ask Lunar — AI answering a real health question" />
+</p>
+
+> More screenshots: [Timeline](docs/images/timeline.PNG) · [Records](docs/images/records.PNG)
+
 ---
 
 ## Features
