@@ -28,7 +28,7 @@ const HomeScreen = ({ data, onOpenLog, onOpenSettings, userName, onBatchAddPerio
   const dateStr = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
 
   const phasePills = (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+    <div style={{ display: "flex", gap: 8, flexWrap: "nowrap", overflowX: "auto" }}>
       {PHASES.map((p) => (
         <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px", borderRadius: 20, background: phase && p.name === phase.name ? p.color + "22" : "transparent", border: `1px solid ${phase && p.name === phase.name ? p.color : C.border}` }}>
           <span style={{ width: 7, height: 7, borderRadius: "50%", background: p.color, display: "inline-block" }} />
@@ -39,34 +39,34 @@ const HomeScreen = ({ data, onOpenLog, onOpenSettings, userName, onBatchAddPerio
   );
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "0 0 16px" }}>
+    <div style={{ flex: 1, overflowY: "auto" }}>
 
       {isDesktop ? (
         // ── Desktop: centered dashboard, max 1100px ─────────────────────────
-        <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column" }}>
 
           {/* Header */}
-          <div style={{ padding: "28px 48px 24px", borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+          <div style={{ padding: "36px 48px 24px", borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
             <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 6 }}>{dateStr}</p>
-            <h1 style={{ fontFamily: F.heading, fontSize: 28, fontWeight: 300, color: C.text }}>{greeting()}, {userName} ☀️</h1>
+            <h1 style={{ fontFamily: F.heading, fontSize: 30, fontWeight: 400, color: C.text }}>{greeting()}, {userName} ☀️</h1>
           </div>
 
           {/* 2-column body */}
-          <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+          <div style={{ display: "flex" }}>
 
             {/* Left panel */}
-            <div style={{ flex: "0 0 340px", borderRight: `1px solid ${C.border}`, padding: "28px 24px", display: "flex", flexDirection: "column", gap: 16, overflowY: "auto" }}>
+            <div style={{ flex: "0 0 340px", borderRight: `1px solid ${C.border}`, padding: "28px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
               <CycleWheel cycleDay={data.cycleDay} totalDays={data.predictedCycleLength} isOnPeriod={data.isOnPeriod} size={230} />
               {phasePills}
               {phase && (
-                <div style={{ padding: "12px 14px", background: phase.color + "12", borderRadius: 12, border: `1px solid ${phase.color}25` }}>
+                <div style={{ padding: "12px 14px", background: phase.color + "22", borderRadius: 12, border: `1px solid ${phase.color}55` }}>
                   <p style={{ fontFamily: F.body, fontSize: 12, color: C.text, lineHeight: 1.7 }}>{PHASE_INSIGHTS[phase.name]}</p>
                 </div>
               )}
             </div>
 
             {/* Right panel */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "28px 32px", display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ flex: 1, padding: "28px 32px", display: "flex", flexDirection: "column", gap: 12 }}>
 
               {/* Log today */}
               <button className="press" onClick={onOpenLog} style={{ width: "100%", padding: "14px 18px", borderRadius: 14, border: `1px solid ${data.todayLog ? C.primaryLight : C.border}`, background: data.todayLog ? C.primaryMuted : C.white, display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}>
@@ -132,7 +132,7 @@ const HomeScreen = ({ data, onOpenLog, onOpenSettings, userName, onBatchAddPerio
           <div style={{ padding: "18px 20px 0", display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
             <div>
               <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>{dateStr}</p>
-              <h1 style={{ fontFamily: F.heading, fontSize: 24, fontWeight: 300, color: C.text, lineHeight: 1.3 }}>{greeting()}, {userName} ☀️</h1>
+              <h1 style={{ fontFamily: F.heading, fontSize: 24, fontWeight: 400, color: C.text, lineHeight: 1.3 }}>{greeting()}, {userName} ☀️</h1>
             </div>
             <button className="press" onClick={onOpenSettings} style={{ marginTop: 2, width: 34, height: 34, borderRadius: "50%", background: C.white, border: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 }}>⚙️</button>
           </div>

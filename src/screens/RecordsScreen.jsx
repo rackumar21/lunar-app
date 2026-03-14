@@ -103,7 +103,7 @@ const RecordsScreen = ({ reports, onViewReport, onAddReport, onReorder, isDeskto
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding }}>
           <div>
             <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>Health</p>
-            <h2 style={{ fontFamily: F.heading, fontSize: isDesktop ? 32 : 26, fontWeight: 400, color: C.text, marginBottom: 3 }}>Records</h2>
+            <h2 style={{ fontFamily: F.heading, fontSize: isDesktop ? 30 : 26, fontWeight: 400, color: C.text, marginBottom: 3 }}>Records</h2>
             <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec }}>Your personal health paper trail</p>
           </div>
           <button className="press" onClick={onAddReport} style={{ marginTop: 6, padding: "9px 14px", borderRadius: 12, background: `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontSize: 12, fontWeight: 600, color: C.white }}>+ Add</button>

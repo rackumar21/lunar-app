@@ -15,7 +15,7 @@ function datesInRange(start, end) {
   return dates;
 }
 
-const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatchAddPeriodDays, onBatchRemovePeriodDays, onOpenLog, onAddPeriodDay, onRemovePeriodDay }) => {
+const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatchAddPeriodDays, onBatchRemovePeriodDays, onOpenLog, onAddPeriodDay, onRemovePeriodDay, isDesktop }) => {
   const TODAY = new Date();
   const DAYS_BACK = 300, DAYS_FORWARD = 90;
   const days = [];
@@ -74,17 +74,17 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      <div style={{ padding: "18px 20px 12px", flexShrink: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+      <div style={{ padding: isDesktop ? "36px 48px 16px" : "18px 20px 12px", flexShrink: 0, display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <div>
           <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>Your history</p>
-          <h2 style={{ fontFamily: F.heading, fontSize: 24, fontWeight: 400, color: C.text }}>{getMonthLabel(headerKey)}</h2>
+          <h2 style={{ fontFamily: F.heading, fontSize: isDesktop ? 30 : 24, fontWeight: 400, color: C.text }}>{getMonthLabel(headerKey)}</h2>
         </div>
         <button className="press" onClick={() => setIsHistoryOpen(true)} style={{ marginTop: 4, padding: "6px 12px", borderRadius: 20, border: `1px solid ${C.primaryLight}`, background: C.primaryMuted, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: C.primary, flexShrink: 0 }}>
           + Past cycles
         </button>
       </div>
 
-      <div ref={stripRef} onScroll={handleScroll} style={{ display: "flex", overflowX: "auto", padding: "0 20px 14px", gap: 6, flexShrink: 0 }}>
+      <div ref={stripRef} onScroll={handleScroll} style={{ display: "flex", overflowX: "auto", padding: isDesktop ? "0 48px 16px" : "0 20px 14px", gap: 8, flexShrink: 0 }}>
         {days.map((key, idx) => {
           const d = new Date(key + "T12:00:00");
           const dayNum = d.getDate();
@@ -109,7 +109,7 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
                 data-daykey={key}
                 className="press"
                 onClick={() => setSelectedKey(key)}
-                style={{ width: 38, flexShrink: 0, padding: "8px 0", borderRadius: 12, background: isSelected ? (style.bg === "transparent" ? C.white : style.bg) : style.bg, border: isSelected ? `2px solid ${C.primary}` : style.border || "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, boxShadow: isSelected ? "0 2px 10px rgba(184,107,78,0.2)" : "none", outline: "none" }}
+                style={{ width: 44, flexShrink: 0, padding: "10px 0", borderRadius: 14, background: isSelected ? (style.bg === "transparent" ? C.white : style.bg) : style.bg, border: isSelected ? `2px solid ${C.primary}` : style.border || "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, boxShadow: isSelected ? "0 2px 10px rgba(184,107,78,0.2)" : "none", outline: "none" }}
               >
                 <span style={{ fontFamily: F.body, fontSize: 9, color: isSelected ? C.primary : C.textMuted, fontWeight: 600, letterSpacing: "0.06em" }}>{dayName}</span>
                 <span style={{ fontFamily: F.body, fontSize: 13, fontWeight: isTod ? 700 : 500, color: isSelected ? C.primary : style.text }}>{dayNum}</span>
@@ -120,7 +120,7 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
         })}
       </div>
 
-      <div style={{ display: "flex", gap: 12, padding: "0 20px 12px", flexShrink: 0 }}>
+      <div style={{ display: "flex", gap: 12, padding: isDesktop ? "0 48px 12px" : "0 20px 12px", flexShrink: 0 }}>
         {[
           { color: C.primary, label: "Period" },
           { color: C.primary, label: "Predicted", dashed: true },
@@ -134,9 +134,9 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
 
       <div style={{ height: 1, background: C.border, flexShrink: 0 }} />
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px 20px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: isDesktop ? "24px 48px 28px" : "16px 20px 20px" }}>
         <div style={{ marginBottom: 14 }}>
-          <p style={{ fontFamily: F.heading, fontSize: 18, fontWeight: 400, color: C.text, marginBottom: 8 }}>{fmtDay(selectedKey)}</p>
+          <p style={{ fontFamily: F.heading, fontSize: 22, fontWeight: 400, color: C.text, marginBottom: 10 }}>{fmtDay(selectedKey)}</p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
             <button className="press" onClick={() => onOpenLog(selectedKey)} style={{ padding: "6px 14px", borderRadius: 20, border: `1.5px solid ${selectedLog ? C.primaryLight : C.border}`, background: selectedLog ? C.primaryMuted : C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: selectedLog ? C.primary : C.textSec, lineHeight: 1.4 }}>
               {selectedLog ? "✓ Edit log" : "+ Log symptoms"}
@@ -193,9 +193,9 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
                 const isEditing = editingCycle?.originalStart === cycle.startDate;
                 return (
                   <div key={cycle.startDate || cycle.label} style={{ borderBottom: i < cycleHistory.length - 1 ? `1px solid ${C.border}` : "none" }}>
-                    <div style={{ padding: "13px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ padding: "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <div>
-                        <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec, marginBottom: 3 }}>{cycle.label}</p>
+                        <p style={{ fontFamily: F.body, fontSize: 13, color: C.textSec, marginBottom: 4 }}>{cycle.label}</p>
                         <div style={{ display: "flex", gap: 12 }}>
                           {cycle.cycleLength && <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Cycle <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.cycleLength}d</span></p>}
                           {cycle.periodLength && <p style={{ fontFamily: F.body, fontSize: 11, color: C.textMuted }}>Period <span style={{ fontFamily: F.heading, fontSize: 14, color: C.text, fontWeight: 400 }}>{cycle.periodLength}d</span></p>}

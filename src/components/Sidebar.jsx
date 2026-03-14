@@ -2,7 +2,7 @@ import { C, F, TABS } from "../lib/constants";
 
 const Sidebar = ({ active, onChange, onOpenSettings }) => (
   <div style={{
-    width: 200,
+    width: 230,
     flexShrink: 0,
     background: C.white,
     borderRight: `1px solid ${C.border}`,
@@ -12,8 +12,8 @@ const Sidebar = ({ active, onChange, onOpenSettings }) => (
   }}>
     {/* Brand */}
     <div style={{ padding: "32px 24px 28px" }}>
-      <p style={{ fontFamily: F.heading, fontSize: 22, fontWeight: 300, fontStyle: "italic", color: C.text }}>🌙 Lunar</p>
-      <p style={{ fontFamily: F.body, fontSize: 10, color: C.textMuted, marginTop: 4 }}>Your health companion</p>
+      <p style={{ fontFamily: F.heading, fontSize: 26, fontWeight: 300, fontStyle: "italic", color: C.text }}>🌙 Lunar</p>
+      <p style={{ fontFamily: F.body, fontSize: 12, color: C.textMuted, marginTop: 5 }}>Your health companion</p>
     </div>
 
     {/* Nav items */}
@@ -35,7 +35,7 @@ const Sidebar = ({ active, onChange, onOpenSettings }) => (
             cursor: "pointer",
           }}
         >
-          <span style={{ fontSize: 17 }}>{t.icon}</span>
+          <span style={{ width: 20, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 16, lineHeight: 1, flexShrink: 0 }}>{t.icon}</span>
           <span style={{
             fontFamily: F.body,
             fontSize: 13,

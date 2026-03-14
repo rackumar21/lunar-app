@@ -130,7 +130,7 @@ export const SEED = {
 export const TABS = [
   { id: "home", label: "Home", icon: "⌂" },
   { id: "calendar", label: "Timeline", icon: "◈" },
-  { id: "ask", label: "Ask Lunar", icon: "🌙" },
+  { id: "ask", label: "Ask Lunar", icon: "☽" },
   { id: "records", label: "Records", icon: "◧" },
 ];
 

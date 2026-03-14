@@ -49,8 +49,7 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboa
     setIsAtBottom(scrollHeight - scrollTop - clientHeight < 50);
   };
 
-  // Header and suggestions visible when: keyboard closed, OR user has scrolled up to read
-  const showHeader = !keyboardOpen || !isAtBottom;
+  const showHeader = true;
 
   const handleSend = async (q) => {
     const question = q || input.trim();
@@ -80,32 +79,30 @@ const AskLunarScreen = ({ context, messages, onMessagesChange, onNewChat, keyboa
   };
 
   // On desktop: full-width background but content centered in a column (ChatGPT pattern)
-  const col = isDesktop ? { maxWidth: 800, margin: "0 auto", width: "100%" } : {};
-  const hPad = isDesktop ? "16px 24px" : "12px 16px 10px";
-  const mPad = isDesktop ? "24px 24px 8px" : "14px 16px 8px";
+  const col = isDesktop ? { maxWidth: 900, margin: "0 auto", width: "100%" } : {};
+  const hPad = isDesktop ? "36px 48px 24px" : "12px 16px 10px";
+  const mPad = isDesktop ? "24px 48px 8px" : "14px 16px 8px";
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {showHeader && (
         <>
           <div style={{ flexShrink: 0, borderBottom: `1px solid ${C.border}` }}>
-            <div style={{ ...col, padding: hPad, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: `linear-gradient(135deg, ${C.primary}, ${C.rose})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>🌙</div>
-                <div>
-                  <h2 style={{ fontFamily: F.heading, fontSize: 18, fontWeight: 400, color: C.text }}>Ask Lunar</h2>
-                  <p style={{ fontFamily: F.body, fontSize: 11, color: C.textSec }}>Knows your cycle, symptoms & records</p>
-                </div>
+            <div style={{ ...col, padding: hPad, display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+              <div>
+                <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: C.textMuted, marginBottom: 4 }}>AI Assistant</p>
+                <h2 style={{ fontFamily: F.heading, fontSize: 30, fontWeight: 400, color: C.text, marginBottom: 3 }}>Ask Lunar</h2>
+                <p style={{ fontFamily: F.body, fontSize: 12, color: C.textSec }}>Knows your cycle, symptoms & records</p>
               </div>
               {messages.length > 1 && (
-                <button className="press" onClick={() => { onNewChat(); analytics.track("new_chat_started"); }} style={{ padding: "5px 12px", borderRadius: 20, border: `1px solid ${C.border}`, background: C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: C.textSec }}>
+                <button className="press" onClick={() => { onNewChat(); analytics.track("new_chat_started"); }} style={{ marginTop: 6, padding: "5px 12px", borderRadius: 20, border: `1px solid ${C.border}`, background: C.white, fontFamily: F.body, fontSize: 11, fontWeight: 600, color: C.textSec }}>
                   New chat
                 </button>
               )}
             </div>
           </div>
           <div style={{ flexShrink: 0, borderBottom: `1px solid ${C.border}` }}>
-            <div style={{ ...col, padding: isDesktop ? "10px 24px" : "10px 16px" }}>
+            <div style={{ ...col, padding: isDesktop ? "10px 48px" : "10px 16px" }}>
               <div style={{ display: "flex", gap: 8, overflowX: "auto" }}>
                 {AI_SUGGESTIONS.map((s) => (
                   <button key={s} className="press" onClick={() => handleSend(s)} style={{ flexShrink: 0, padding: "7px 13px", borderRadius: 20, border: `1px solid ${C.border}`, background: C.white, fontFamily: F.body, fontSize: 11, color: C.textSec, whiteSpace: "nowrap" }}>{s}</button>

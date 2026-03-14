@@ -94,20 +94,20 @@ const AuthScreen = ({ onSignIn, onSignUp, isDesktop }) => {
           <div style={{ marginBottom: 48 }}>
             <p style={{ fontSize: 42, marginBottom: 4 }}>🌙</p>
             <h1 style={{ fontFamily: F.heading, fontSize: 44, fontWeight: 300, fontStyle: 'italic', color: '#F7F3EE', marginBottom: 12 }}>Lunar</h1>
-            <p style={{ fontFamily: F.body, fontSize: 16, color: '#F7F3EEaa', lineHeight: 1.6 }}>Track your period cycles, understand your body, and get answers from an AI that feels like it actually knows you.</p>
+            <p style={{ fontFamily: F.body, fontSize: 18, color: '#F7F3EEaa', lineHeight: 1.6 }}>Track your period cycles, understand your body, and get answers from an AI that feels like it actually knows you.</p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {[
               { emoji: '🩸', title: 'Cycle tracking', desc: 'Log period days and get predictions based on your real history' },
-              { emoji: '🤖', title: 'AI that knows you', desc: 'Ask Lunar anything — it has access to your cycle, logs, and lab reports' },
+              { emoji: '✨', title: 'AI that knows you', desc: 'Ask Lunar anything — it has access to your cycle, logs, and lab reports' },
               { emoji: '🧪', title: 'Lab report analysis', desc: 'Upload blood reports and Lunar extracts every marker automatically' },
             ].map((f) => (
               <div key={f.title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
                 <span style={{ fontSize: 20, flexShrink: 0, marginTop: 2 }}>{f.emoji}</span>
                 <div>
-                  <p style={{ fontFamily: F.body, fontSize: 13, fontWeight: 600, color: '#F7F3EE', marginBottom: 3 }}>{f.title}</p>
-                  <p style={{ fontFamily: F.body, fontSize: 12, color: '#F7F3EE88', lineHeight: 1.5 }}>{f.desc}</p>
+                  <p style={{ fontFamily: F.body, fontSize: 15, fontWeight: 600, color: '#F7F3EE', marginBottom: 4 }}>{f.title}</p>
+                  <p style={{ fontFamily: F.body, fontSize: 13, color: '#F7F3EE88', lineHeight: 1.5 }}>{f.desc}</p>
                 </div>
               </div>
             ))}

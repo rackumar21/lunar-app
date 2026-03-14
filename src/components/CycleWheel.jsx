@@ -31,16 +31,25 @@ const CycleWheel = ({ cycleDay, totalDays = 28, isOnPeriod = false, size = 200 }
   const dayFontSize = Math.round(size * 0.15);
   const phaseFontSize = Math.round(size * 0.056);
 
+  // Phase boundaries as day counts (not percentages) — scale with totalDays
+  const phaseBounds = { Menstrual: [0, 5], Follicular: [5, 13], Ovulation: [13, 16], Luteal: [16, totalDays] };
+  const phaseDeg = (name) => {
+    const [s, e] = phaseBounds[name] || [0, totalDays];
+    return { startDeg: (s / totalDays) * 360, endDeg: (e / totalDays) * 360 };
+  };
+
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
       <svg width={size} height={size} style={{ overflow: "visible" }}>
-        {PHASES.map((p) => (
-          <path key={p.name} d={arc(p.startDeg, p.endDeg, innerR, outerR)} fill={p.color} opacity={0.18} />
-        ))}
-        {phase && PHASES.map((p) => (
-          p.name === phase.name &&
-          <path key={p.name + "-active"} d={arc(p.startDeg, p.endDeg, innerR, outerR)} fill={p.color} opacity={0.55} />
-        ))}
+        {PHASES.map((p) => {
+          const { startDeg, endDeg } = phaseDeg(p.name);
+          return <path key={p.name} d={arc(startDeg, endDeg, innerR, outerR)} fill={p.color} opacity={0.18} />;
+        })}
+        {phase && PHASES.map((p) => {
+          if (p.name !== phase.name) return null;
+          const { startDeg, endDeg } = phaseDeg(p.name);
+          return <path key={p.name + "-active"} d={arc(startDeg, endDeg, innerR, outerR)} fill={p.color} opacity={0.85} />;
+        })}
         <circle cx={dotX} cy={dotY} r={dotOuter} fill={C.white} stroke={phase ? phase.color : C.textMuted} strokeWidth={2.5} />
         <circle cx={dotX} cy={dotY} r={dotInner} fill={phase ? phase.color : C.textMuted} />
       </svg>
