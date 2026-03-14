@@ -182,6 +182,26 @@ src/
 
 ---
 
+## DESKTOP RESPONSIVE POLISH ✅
+
+**Completed March 2026 — added after Chapter 5**
+
+- ✅ `isDesktop` state in App.jsx (JS-based, window.innerWidth >= 768)
+- ✅ Sidebar component (230px, brand + nav + settings)
+- ✅ Desktop layout: full-screen fixed, sidebar + flex content (no phone mockup frame)
+- ✅ HomeScreen desktop: 2-column (340px wheel panel + right cards), maxWidth 1100
+- ✅ CalendarScreen desktop: maxWidth 900, isDesktop prop for conditional padding
+- ✅ AskLunarScreen desktop: page-title header, maxWidth 900 content column
+- ✅ RecordsScreen desktop: 2-column card grid, maxWidth 960
+- ✅ AuthScreen desktop: split-screen (dark brand left, white form right)
+- ✅ All headers consistent: Fraunces 30px/400, 36px top + 48px horizontal padding
+- ✅ CycleWheel: phase arc segments scale with real cycle length
+- ✅ Ask Lunar header always visible (keyboard detection was unreliable)
+- ✅ Sidebar icons: fixed-width flex container, ☽ replaces 🌙 emoji
+- ✅ Screenshots added to README (docs/images/)
+
+---
+
 ## CHAPTER 6 — Portfolio 🔄
 
 **Goal:** Turn this project into a career asset.

@@ -325,6 +325,56 @@ Separate repo because: the portfolio covers multiple projects (Lunar + TruthSeek
 
 ---
 
+## D018 — JS-based responsive layout over CSS media queries
+
+**Date:** March 2026
+**Decision:** Use a JavaScript `isDesktop` state variable (`window.innerWidth >= 768`) with a resize listener, rather than CSS media queries, to drive the responsive layout.
+
+**Options considered:**
+- CSS media queries (standard web approach)
+- JS `isDesktop` state passed as a prop to each screen
+
+**What we chose:** JS state
+
+**Why:**
+The entire app uses inline styles (no CSS classes). CSS media queries can't target inline styles. Switching to a CSS-based approach would require rewriting the styling system. JS state integrates cleanly with the existing pattern — screens receive `isDesktop` as a prop and render different JSX branches for mobile and desktop.
+
+**Trade-off:** Slightly more verbose — each screen needs a conditional. But consistent with the existing codebase and easy to understand.
+
+---
+
+## D019 — CycleWheel phase arcs scale with real cycle length
+
+**Date:** March 2026
+**Decision:** Compute phase arc segment degrees dynamically from `totalDays`, not hardcoded values.
+
+**Options considered:**
+- Keep hardcoded degrees (calibrated for 28-day cycle)
+- Compute dynamically from `totalDays`
+
+**What we chose:** Dynamic computation
+
+**Why:**
+The hardcoded degrees assumed a 28-day cycle. Users with longer cycles (e.g. 44 days) had the position dot appearing in the wrong coloured segment — day 7 would sit visually inside the Menstrual arc even though the phase was Follicular. The dot position formula scales with `totalDays`; the arc segments must too. Fix: `phaseBounds` object maps each phase to a day range, degrees computed as `(days / totalDays) * 360`.
+
+---
+
+## D020 — Ask Lunar header always visible (removed keyboard-based hiding)
+
+**Date:** March 2026
+**Decision:** Set `showHeader = true` always in AskLunarScreen. Remove the logic that hid the header when `keyboardOpen && isAtBottom`.
+
+**Options considered:**
+- Keep original logic (hide header when keyboard open + user at bottom of chat)
+- Always show header
+
+**What we chose:** Always show
+
+**Why:**
+The keyboard detection (comparing `INITIAL_HEIGHT` vs `visualViewport.height`) produced false positives on many device emulations — Nest Hub, Surface Duo, Galaxy Z Fold 5, Galaxy S8+. The header disappeared on devices where no keyboard was open. The UX benefit of hiding the header (a few extra pixels of chat space) was not worth the reliability cost.
+
+---
+
 ## D007 — No TypeScript (for now)
 
 **Date:** March 2025 (session 1)
