@@ -288,6 +288,43 @@ The user uploads a PDF and has already told us what's in it by choosing the file
 
 ---
 
+## D016 — AI memories moved from localStorage to Supabase
+
+**Date:** March 2026
+**Decision:** Store Lunar's learned memories in a Supabase `user_memories` table instead of localStorage.
+
+**Options considered:**
+- localStorage keyed by `lunar_memory_{userId}` (original — fast, no migration needed)
+- Supabase `user_memories` table (persistent across devices, follows the account)
+
+**What we chose:** Supabase
+
+**Why:**
+localStorage is device-specific. If you clear your browser, switch phones, or log in from another device, all memories are gone. Since memories are the most valuable persistent state in the app (Lunar "knowing" you have PCOD is genuinely useful), they should follow your account not your browser. The migration required one new Supabase table and a new `useMemories` hook — straightforward trade-off.
+
+**Supersedes:** D012 (which chose localStorage — that decision was correct for an MVP, this is the natural next step once the app was real enough to matter).
+
+---
+
+## D017 — Portfolio as a separate repo, docs-first approach
+
+**Date:** March 2026
+**Decision:** Build the career portfolio in a separate repo (`rachita-portfolio`) with a docs-first approach — write the narrative, case studies, and interview prep before building any website.
+
+**Options considered:**
+- Add a portfolio section to the Lunar README
+- Build website first, then write the content
+- Separate repo, docs-first
+
+**What we chose:** Separate repo, docs-first
+
+**Why:**
+The career asset is the *thinking and writing*, not the website. A well-written case study in a markdown file is more useful than a beautiful website with shallow content. Getting the narrative right first also means the website has a clear brief — rather than building a site and trying to fill it with content.
+
+Separate repo because: the portfolio covers multiple projects (Lunar + TruthSeek), has its own Claude session context, and shouldn't clutter either project's commit history.
+
+---
+
 ## D007 — No TypeScript (for now)
 
 **Date:** March 2025 (session 1)

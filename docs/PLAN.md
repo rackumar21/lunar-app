@@ -195,7 +195,11 @@ src/
 **Progress:**
 - ✅ Portfolio repo created (rachita-portfolio, private) at ~/Work/rachita-portfolio
 - ✅ TruthSeek repos cloned locally at ~/Work/truthseek for case study work
-- ⬜ Lunar case study written
+- ✅ CLAUDE.md written for portfolio repo — career context, JD research, target roles baked in
+- ✅ docs/ seeded: MASTER-NARRATIVE.md, LUNAR-CASESTUDY.md, RESUME-BULLETS.md, INTERVIEW-PREP.md
+- ✅ Custom slash commands made global (copied to ~/.claude/commands/) — now work in all sessions
+- ⬜ Lunar case study written (templates exist, need content)
+- ⬜ TruthSeek case study written (do in truthseek Claude session)
 - ⬜ Cross-project interview narrative
 - ⬜ Personal website built and deployed
 

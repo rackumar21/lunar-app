@@ -191,13 +191,7 @@ export default function LunarApp() {
           </div>
         </div>
       )}
-      {tab === "ask" && (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", maxWidth: isDesktop ? 780 : "none", margin: isDesktop ? "0 auto" : 0, width: "100%" }}>
-            <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} keyboardOpen={keyboardOpen} onSaveMemories={addMemories} context={askContext} />
-          </div>
-        </div>
-      )}
+      {tab === "ask" && <AskLunarScreen messages={chatMessages} onMessagesChange={setChatMessages} onNewChat={() => { setChatMessages([INITIAL_MESSAGE]); if (user) localStorage.removeItem(`lunar_chat_${user.id}`); }} keyboardOpen={keyboardOpen} onSaveMemories={addMemories} context={askContext} isDesktop={isDesktop} />}
       {tab === "records" && <RecordsScreen reports={reports} onViewReport={setSelectedReport} onAddReport={() => setIsUploadOpen(true)} onReorder={reorderReports} isDesktop={isDesktop} />}
     </div>
   ) : null;
@@ -209,8 +203,8 @@ export default function LunarApp() {
 
       {isDesktop ? (
         // ── Desktop layout: sidebar on left, content on right ───────────────
-        <div style={{ position: "fixed", inset: 0, background: "#E8E3DC", display: "flex", justifyContent: "center" }}>
-          <div style={{ width: "100%", maxWidth: 1200, display: "flex", height: "100%" }}>
+        <div style={{ position: "fixed", inset: 0, background: "#F7F3EE", display: "flex" }}>
+          <div style={{ width: "100%", display: "flex", height: "100%" }}>
 
             {/* Sidebar — only shown when logged in */}
             {user && (
@@ -220,12 +214,7 @@ export default function LunarApp() {
             {/* Content area */}
             <div style={{ flex: 1, background: "#F7F3EE", display: "flex", flexDirection: "column", overflow: "hidden" }}>
               {!user ? (
-                // Auth screen centered in content area
-                <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "stretch" }}>
-                  <div style={{ width: "100%", maxWidth: 440 }}>
-                    <AuthScreen onSignIn={signIn} onSignUp={signUp} />
-                  </div>
-                </div>
+                <AuthScreen onSignIn={signIn} onSignUp={signUp} isDesktop={isDesktop} />
               ) : (
                 screens
               )}
