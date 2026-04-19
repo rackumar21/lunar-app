@@ -23,7 +23,7 @@ import RecordsScreen from "./screens/RecordsScreen";
 import AuthScreen from "./screens/AuthScreen";
 
 export default function LunarApp() {
-  const { user, loading: authLoading, signIn, signUp, signOut } = useAuth();
+  const { user, loading: authLoading, signIn, signUp, signOut, resetPassword } = useAuth();
 
   // ── Toast ──────────────────────────────────────────────────────────────────
   const [toast, setToast] = useState(null); // { message, type }
@@ -214,7 +214,7 @@ export default function LunarApp() {
             {/* Content area */}
             <div style={{ flex: 1, background: "#F7F3EE", display: "flex", flexDirection: "column", overflow: "hidden" }}>
               {!user ? (
-                <AuthScreen onSignIn={signIn} onSignUp={signUp} isDesktop={isDesktop} />
+                <AuthScreen onSignIn={signIn} onSignUp={signUp} onResetPassword={resetPassword} isDesktop={isDesktop} />
               ) : (
                 screens
               )}
@@ -229,7 +229,7 @@ export default function LunarApp() {
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 100 }} />
 
             {!user ? (
-              <AuthScreen onSignIn={signIn} onSignUp={signUp} />
+              <AuthScreen onSignIn={signIn} onSignUp={signUp} onResetPassword={resetPassword} />
             ) : (
               <>
                 {screens}

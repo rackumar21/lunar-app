@@ -25,10 +25,18 @@ const LoginForm = ({ mode, setMode, name, setName, email, setEmail, password, se
         <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.textMuted, marginBottom: 6 }}>Email</p>
         <input type="email" name="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={{ width: '100%', padding: '13px 14px', borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: 'none' }} />
       </div>
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: mode === 'login' ? 8 : 24 }}>
         <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.textMuted, marginBottom: 6 }}>Password</p>
         <input type="password" name="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="6+ characters" style={{ width: '100%', padding: '13px 14px', borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: 'none' }} />
       </div>
+
+      {mode === 'login' && (
+        <div style={{ textAlign: 'right', marginBottom: 20 }}>
+          <button type="button" onClick={() => setMode('forgot')} style={{ fontFamily: F.body, fontSize: 12, color: C.primary, background: 'none', padding: 0 }}>
+            Forgot password?
+          </button>
+        </div>
+      )}
 
       {error && (
         <div style={{ background: C.errorMuted, borderRadius: 10, padding: '10px 14px', marginBottom: 16, border: `1px solid ${C.error}33` }}>
@@ -48,7 +56,34 @@ const LoginForm = ({ mode, setMode, name, setName, email, setEmail, password, se
   </>
 )
 
-const AuthScreen = ({ onSignIn, onSignUp, isDesktop }) => {
+const ForgotForm = ({ email, setEmail, error, message, loading, onSubmit, onBack }) => (
+  <>
+    <button type="button" onClick={onBack} style={{ fontFamily: F.body, fontSize: 12, color: C.textMuted, background: 'none', padding: 0, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 4 }}>
+      ← Back to log in
+    </button>
+    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }}>
+      <div style={{ marginBottom: 24 }}>
+        <p style={{ fontFamily: F.body, fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.textMuted, marginBottom: 6 }}>Email</p>
+        <input type="email" name="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" style={{ width: '100%', padding: '13px 14px', borderRadius: 12, border: `1.5px solid ${C.border}`, background: C.white, fontSize: 13, color: C.text, outline: 'none' }} />
+      </div>
+      {error && (
+        <div style={{ background: C.errorMuted, borderRadius: 10, padding: '10px 14px', marginBottom: 16, border: `1px solid ${C.error}33` }}>
+          <p style={{ fontFamily: F.body, fontSize: 12, color: C.error }}>{error}</p>
+        </div>
+      )}
+      {message && (
+        <div style={{ background: C.successMuted, borderRadius: 10, padding: '10px 14px', marginBottom: 16, border: `1px solid ${C.success}33` }}>
+          <p style={{ fontFamily: F.body, fontSize: 12, color: C.success }}>{message}</p>
+        </div>
+      )}
+      <button type="submit" className="press" disabled={loading} style={{ width: '100%', padding: '15px', borderRadius: 14, background: `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontFamily: F.body, fontSize: 14, fontWeight: 600, color: C.white, opacity: loading ? 0.7 : 1 }}>
+        {loading ? 'Sending…' : 'Send reset link'}
+      </button>
+    </form>
+  </>
+)
+
+const AuthScreen = ({ onSignIn, onSignUp, onResetPassword, isDesktop }) => {
   const [mode, setMode] = useState('login')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -72,7 +107,12 @@ const AuthScreen = ({ onSignIn, onSignUp, isDesktop }) => {
     } else {
       const { error } = await onSignUp(email, password, name.trim())
       if (error) {
-        setError(error.message)
+        if (error.message?.toLowerCase().includes('already registered') || error.message?.toLowerCase().includes('already been registered')) {
+          setMode('login')
+          setMessage('You already have an account. Log in below.')
+        } else {
+          setError(error.message)
+        }
       } else {
         analytics.track('sign_up_completed')
         setMessage('Check your email for a confirmation link, then come back to log in.')
@@ -82,7 +122,19 @@ const AuthScreen = ({ onSignIn, onSignUp, isDesktop }) => {
     setLoading(false)
   }
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) { setError('Enter your email above.'); return }
+    setError(null)
+    setMessage(null)
+    setLoading(true)
+    const { error } = await onResetPassword(email)
+    if (error) setError(error.message)
+    else setMessage('Check your email for a reset link.')
+    setLoading(false)
+  }
+
   const formProps = { mode, setMode: handleModeChange, name, setName, email, setEmail, password, setPassword, error, message, loading, onSubmit: handleSubmit }
+  const forgotProps = { email, setEmail, error, message, loading, onSubmit: handleForgotPassword, onBack: () => handleModeChange('login') }
 
   if (isDesktop) {
     // ── Desktop: split-screen layout ─────────────────────────────────────────
@@ -118,12 +170,12 @@ const AuthScreen = ({ onSignIn, onSignUp, isDesktop }) => {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 64px', background: C.white }}>
           <div style={{ maxWidth: 380, width: '100%', margin: '0 auto' }}>
             <h2 style={{ fontFamily: F.heading, fontSize: 26, fontWeight: 300, color: C.text, marginBottom: 6 }}>
-              {mode === 'login' ? 'Welcome back' : 'Create your account'}
+              {mode === 'forgot' ? 'Reset your password' : mode === 'login' ? 'Welcome back' : 'Create your account'}
             </h2>
             <p style={{ fontFamily: F.body, fontSize: 13, color: C.textMuted, marginBottom: 28 }}>
-              {mode === 'login' ? 'Log in to your Lunar account' : 'Start tracking your health with Lunar'}
+              {mode === 'forgot' ? "We'll send a reset link to your email." : mode === 'login' ? 'Log in to your Lunar account' : 'Start tracking your health with Lunar'}
             </p>
-            <LoginForm {...formProps} />
+            {mode === 'forgot' ? <ForgotForm {...forgotProps} /> : <LoginForm {...formProps} />}
           </div>
         </div>
 
@@ -139,7 +191,7 @@ const AuthScreen = ({ onSignIn, onSignUp, isDesktop }) => {
         <h1 style={{ fontFamily: F.heading, fontSize: 32, fontWeight: 300, fontStyle: 'italic', color: C.text }}>Lunar</h1>
         <p style={{ fontFamily: F.body, fontSize: 12, color: C.textMuted, marginTop: 4 }}>Your personal health companion</p>
       </div>
-      <LoginForm {...formProps} />
+      {mode === 'forgot' ? <ForgotForm {...forgotProps} /> : <LoginForm {...formProps} />}
     </div>
   )
 }
