@@ -5,7 +5,6 @@ import App from './App.jsx'
 import { initAnalytics, analytics } from './lib/analytics.js'
 
 initAnalytics()
-analytics.track('app_opened')
 
 // iOS keyboard fix: track the true visible height and store it as a CSS variable.
 // When the keyboard opens, window.visualViewport.height shrinks to exclude the keyboard.

@@ -115,6 +115,7 @@ export default function LunarApp() {
       setIsLogOpen(false);
       setIsUploadOpen(false);
       analytics.identify(user.id);
+      analytics.track('app_opened');
     } else {
       // User logged out — clear analytics identity so events aren't mis-attributed
       analytics.reset();
@@ -166,6 +167,8 @@ export default function LunarApp() {
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0];
   const askContext = {
     userName,
+    userEmail: user?.email,
+    userId: user?.id,
     today: todayKey(),
     cycleDay: cycleData.cycleDay,
     predictedCycleLength: cycleData.predictedCycleLength,
