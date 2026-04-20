@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { C, F } from '../lib/constants'
 import { analytics } from '../lib/analytics'
 
@@ -91,6 +91,8 @@ const AuthScreen = ({ onSignIn, onSignUp, onResetPassword, isDesktop }) => {
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => { analytics.track('auth_screen_viewed') }, [])
 
   const handleModeChange = (m) => {
     if (m === 'signup') analytics.track('sign_up_started')
