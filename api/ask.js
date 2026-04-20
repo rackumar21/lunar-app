@@ -1,6 +1,14 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { createClient } from "@supabase/supabase-js";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
+
+const OWNER_EMAIL = "rachitakumar21@gmail.com";
+const FREE_QUESTION_LIMIT = 5;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -11,6 +19,32 @@ export default async function handler(req, res) {
 
   if (!question) {
     return res.status(400).json({ error: "No question provided" });
+  }
+
+  // Rate limit non-owner users to FREE_QUESTION_LIMIT questions
+  const userEmail = context?.userEmail;
+  const userId = context?.userId;
+
+  if (userEmail !== OWNER_EMAIL && userId) {
+    const { data, error } = await supabase
+      .from("ai_usage")
+      .select("question_count")
+      .eq("user_id", userId)
+      .single();
+
+    const currentCount = data?.question_count ?? 0;
+
+    if (currentCount >= FREE_QUESTION_LIMIT) {
+      return res.status(429).json({
+        answer: "You've reached your 5 free questions. Upgrade for full access — coming soon!",
+      });
+    }
+
+    // Increment count (upsert so it works even if row doesn't exist yet)
+    await supabase.from("ai_usage").upsert({
+      user_id: userId,
+      question_count: currentCount + 1,
+    });
   }
 
   const systemPrompt = buildSystemPrompt(context);
@@ -96,6 +130,7 @@ ${recentLogs?.length > 0
       if (l.pain > 0) parts.push(`pain: ${l.pain}/4`);
       if (l.flow) parts.push(`flow: ${l.flow}`);
       if (l.symptoms?.length > 0) parts.push(`symptoms: ${l.symptoms.join(", ")}`);
+      if (l.weight) parts.push(`weight: ${l.weight}kg`);
       if (l.note) parts.push(`note: "${l.note}"`);
       return `- ${l.date}: ${parts.join(", ")}`;
     }).join("\n")
