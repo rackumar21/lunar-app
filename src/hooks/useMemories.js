@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { logger } from '../lib/logger'
+import { analytics } from '../lib/analytics'
 
 export function useMemories(user, onError) {
   const [memories, setMemories] = useState([])
@@ -30,6 +31,7 @@ export function useMemories(user, onError) {
     if (!added.length) return
 
     setMemories(prev => [...prev, ...added])
+    analytics.track('ai_memory_saved', { count: added.length })
     const { error } = await supabase
       .from('user_memories')
       .insert(added.map(memory => ({ user_id: user.id, memory })))

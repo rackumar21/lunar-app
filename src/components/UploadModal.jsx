@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { C, F } from "../lib/constants";
+import { analytics } from "../lib/analytics";
 import Label from "./shared/Label";
 import Handle from "./shared/Handle";
 import CloseBtn from "./shared/CloseBtn";
@@ -99,6 +100,7 @@ const UploadModal = ({ isOpen, onClose, onSave }) => {
       const date = item.reportDate || item.manualDate;
       const flagCount = item.markers.filter((m) => m.status === "low" || m.status === "high").length;
       await onSave({ title: monthLabel(date), date, category: item.category, markers: item.markers, flagCount });
+      analytics.track('report_uploaded', { category: item.category, marker_count: item.markers.length, flag_count: item.markers.filter(m => m.status === 'low' || m.status === 'high').length });
     }
     handleClose();
   };

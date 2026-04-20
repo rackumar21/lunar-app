@@ -92,7 +92,10 @@ const AuthScreen = ({ onSignIn, onSignUp, onResetPassword, isDesktop }) => {
   const [message, setMessage] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  const handleModeChange = (m) => { setMode(m); setError(null); setMessage(null); }
+  const handleModeChange = (m) => {
+    if (m === 'signup') analytics.track('sign_up_started')
+    setMode(m); setError(null); setMessage(null);
+  }
 
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) return
