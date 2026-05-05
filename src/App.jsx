@@ -239,7 +239,7 @@ export default function LunarApp() {
             ) : (
               <>
                 {screens}
-                {!(keyboardOpen && tab === "ask") && <TabBar active={tab} onChange={handleTabChange} />}
+                <TabBar active={tab} onChange={handleTabChange} />
               </>
             )}
           </div>
