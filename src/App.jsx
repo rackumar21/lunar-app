@@ -23,7 +23,7 @@ import RecordsScreen from "./screens/RecordsScreen";
 import AuthScreen from "./screens/AuthScreen";
 
 export default function LunarApp() {
-  const { user, loading: authLoading, signIn, signUp, signOut, resetPassword } = useAuth();
+  const { user, loading: authLoading, signIn, signUp, signOut, resetPassword, updateName } = useAuth();
 
   // ── Toast ──────────────────────────────────────────────────────────────────
   const [toast, setToast] = useState(null); // { message, type }
@@ -116,6 +116,9 @@ export default function LunarApp() {
       setIsUploadOpen(false);
       analytics.identify(user.id);
       analytics.track('app_opened');
+      if (!user.user_metadata?.full_name) {
+        updateName('Rachita');
+      }
     } else {
       // User logged out — clear analytics identity so events aren't mis-attributed
       analytics.reset();
