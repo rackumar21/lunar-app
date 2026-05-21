@@ -58,10 +58,11 @@ export function usePeriodDays(user, onError) {
     if (dates.length === 0) return true
     setPeriodDays(prev => [...new Set([...prev, ...dates])])
 
+    // Delete first to avoid unique constraint conflicts, then insert clean
+    await supabase.from('period_days').delete().eq('user_id', user.id).in('date', dates)
+
     const rows = dates.map(date => ({ user_id: user.id, date }))
-    const { error } = await supabase
-      .from('period_days')
-      .upsert(rows, { onConflict: 'user_id,date', ignoreDuplicates: true })
+    const { error } = await supabase.from('period_days').insert(rows)
 
     if (error) {
       logger.error('Failed to batch add period days', { userId: user.id, dates, error: error.message, code: error.code })
