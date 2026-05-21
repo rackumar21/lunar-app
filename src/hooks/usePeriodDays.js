@@ -31,7 +31,7 @@ export function usePeriodDays(user, onError) {
 
     const { error } = await supabase
       .from('period_days')
-      .upsert({ user_id: user.id, date }, { onConflict: 'date' })
+      .upsert({ user_id: user.id, date }, { ignoreDuplicates: true })
 
     if (error) {
       logger.error('Failed to add period day', { userId: user.id, date, error: error.message })
@@ -60,10 +60,11 @@ export function usePeriodDays(user, onError) {
     const rows = dates.map(date => ({ user_id: user.id, date }))
     const { error } = await supabase
       .from('period_days')
-      .upsert(rows, { onConflict: 'date' })
+      .upsert(rows, { ignoreDuplicates: true })
 
     if (error) {
-      logger.error('Failed to batch add period days', { userId: user.id, dates, error: error.message })
+      logger.error('Failed to batch add period days', { userId: user.id, dates, error: error.message, code: error.code })
+      console.error('[usePeriodDays] batchAdd error:', error)
       onError?.("Couldn't save your period history. Check your connection.")
     }
   }
