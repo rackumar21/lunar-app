@@ -20,7 +20,7 @@ export function usePeriodDays(user, onError) {
       logger.error('Failed to fetch period days', { userId: user.id, error: error.message })
       onError?.("Couldn't load your cycle data. Check your connection.")
     } else {
-      setPeriodDays(data.map(row => row.date))
+      setPeriodDays([...new Set(data.map(row => row.date))])
     }
 
     setLoading(false)
@@ -61,7 +61,7 @@ export function usePeriodDays(user, onError) {
     const rows = dates.map(date => ({ user_id: user.id, date }))
     const { error } = await supabase
       .from('period_days')
-      .upsert(rows, { onConflict: 'user_id,date', ignoreDuplicates: true })
+      .upsert(rows, { ignoreDuplicates: true })
 
     if (error) {
       logger.error('Failed to batch add period days', { userId: user.id, dates, error: error.message, code: error.code })
