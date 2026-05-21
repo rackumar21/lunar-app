@@ -240,8 +240,8 @@ const CalendarScreen = ({ logs, periodDays, predictedDays, cycleHistory, onBatch
                           onClick={async () => {
                             const oldDates = datesInRange(editingCycle.originalStart, editingCycle.originalEnd);
                             const newDates = datesInRange(editingCycle.startDate, editingCycle.endDate);
-                            await onBatchRemovePeriodDays(oldDates);
-                            await onBatchAddPeriodDays(newDates);
+                            const removed = await onBatchRemovePeriodDays(oldDates);
+                            if (removed !== false) await onBatchAddPeriodDays(newDates);
                             setEditingCycle(null);
                           }}
                           style={{ width: "100%", padding: "11px", borderRadius: 10, background: `linear-gradient(135deg, ${C.primary}, ${C.rose})`, fontFamily: F.body, fontSize: 13, fontWeight: 600, color: C.white }}

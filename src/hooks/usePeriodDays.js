@@ -55,21 +55,26 @@ export function usePeriodDays(user, onError) {
   }
 
   const batchAddPeriodDays = async (dates) => {
+    if (dates.length === 0) return true
     setPeriodDays(prev => [...new Set([...prev, ...dates])])
 
     const rows = dates.map(date => ({ user_id: user.id, date }))
     const { error } = await supabase
       .from('period_days')
-      .upsert(rows, { ignoreDuplicates: true })
+      .upsert(rows, { onConflict: 'user_id,date', ignoreDuplicates: true })
 
     if (error) {
       logger.error('Failed to batch add period days', { userId: user.id, dates, error: error.message, code: error.code })
       console.error('[usePeriodDays] batchAdd error:', error)
-      onError?.("Couldn't save your period history. Check your connection.")
+      onError?.(`Couldn't save period history (${error.code || error.message}). Try again.`)
+      fetchPeriodDays()
+      return false
     }
+    return true
   }
 
   const batchRemovePeriodDays = async (dates) => {
+    if (dates.length === 0) return true
     setPeriodDays(prev => prev.filter(d => !dates.includes(d)))
     const { error } = await supabase
       .from('period_days')
@@ -80,7 +85,9 @@ export function usePeriodDays(user, onError) {
       logger.error('Failed to batch remove period days', { userId: user.id, error: error.message })
       onError?.("Couldn't save. Check your connection.")
       fetchPeriodDays()
+      return false
     }
+    return true
   }
 
   return { periodDays, loading, addPeriodDay, removePeriodDay, batchAddPeriodDays, batchRemovePeriodDays }
