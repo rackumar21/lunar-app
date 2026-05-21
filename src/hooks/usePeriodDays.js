@@ -56,15 +56,34 @@ export function usePeriodDays(user, onError) {
 
   const batchAddPeriodDays = async (dates) => {
     if (dates.length === 0) return true
-    setPeriodDays(prev => [...new Set([...prev, ...dates])])
+    const uniqueDates = [...new Set(dates)]
+    setPeriodDays(prev => [...new Set([...prev, ...uniqueDates])])
 
-    const rows = [...new Set(dates)].map(date => ({ user_id: user.id, date }))
+    // Select which dates already exist so we never INSERT a duplicate
+    const { data: existing, error: selectError } = await supabase
+      .from('period_days')
+      .select('date')
+      .eq('user_id', user.id)
+      .in('date', uniqueDates)
+
+    if (selectError) {
+      logger.error('Failed to check existing period days', { userId: user.id, error: selectError.message })
+      onError?.(`Couldn't save period history (${selectError.code || selectError.message}). Try again.`)
+      fetchPeriodDays()
+      return false
+    }
+
+    const existingSet = new Set((existing || []).map(r => r.date))
+    const toInsert = uniqueDates.filter(d => !existingSet.has(d))
+
+    if (toInsert.length === 0) return true
+
     const { error } = await supabase
       .from('period_days')
-      .upsert(rows, { onConflict: 'user_id,date' })
+      .insert(toInsert.map(date => ({ user_id: user.id, date })))
 
     if (error) {
-      logger.error('Failed to batch add period days', { userId: user.id, dates, error: error.message, code: error.code })
+      logger.error('Failed to batch add period days', { userId: user.id, dates: toInsert, error: error.message, code: error.code })
       console.error('[usePeriodDays] batchAdd error:', error)
       onError?.(`Couldn't save period history (${error.code || error.message}). Try again.`)
       fetchPeriodDays()
